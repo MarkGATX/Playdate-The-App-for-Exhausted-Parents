@@ -3,6 +3,9 @@ var lat;
 var long;
 var map;
 var playDateMapBoxToken = 'pk.eyJ1IjoibWFya2dhdHgiLCJhIjoiY2w5MndoNDVqMDEwZDN5bXBiOTZseTYyMSJ9.-ZUmZXLJEzZyTkCwSBMGuw';
+var goodWeatherCodes = [800,801,802, 803,804,741]
+var goodWeatherSearches = ['playground_', 'hike_', 'lake_', 'zoo_']
+var badWeatherSearches = ['museum_', 'movie_', 'library_', 'craft_']
 
 
 //Check for geolocation in browser
@@ -14,10 +17,33 @@ if ('geolocation' in navigator) {
     // send to function to simply search for location
   };
 
+function noGeoSearchMap() {
+    console.log('ping');
+    //need input to city city data.
+    // noGeoCitySearch = input.value -- pass to fetch request
+    fetchURL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/boston.json?&access_token=' + playDateMapBoxToken;
+    fetch(fetchURL, {
+        method: 'GET', //GET is the default.
+        credentials: 'same-origin', // include, *same-origin, omit
+        redirect: 'follow', // manual, *follow, error
+    })
+        .then(function (response) {
+        return response.json();
+    })
+        .then(function (data) {
+         console.log(data);
+        long=data.features[0].geometry.coordinates[0];
+        lat=data.features[0].geometry.coordinates[1];
+        buildMaps();
+  });
+};
+
+
+
 function success(lat, long) {
     logLatLong(lat, long);
     testFetch();
-    // buildMaps();
+    buildMaps();
   }
   
 function error() {
@@ -82,38 +108,38 @@ mapboxgl.accessToken = playDateMapBoxToken;
   });
 
   // Add the geocoder to the map
-map.addControl(geocoder);
+// map.addControl(geocoder);
 
 
-map.on('load', () => {
-    map.addSource('single-point', {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: []
-      }
-    });
+// map.on('load', () => {
+//     map.addSource('single-point', {
+//       type: 'geojson',
+//       data: {
+//         type: 'FeatureCollection',
+//         features: []
+//       }
+//     });
   
-    map.addLayer({
-      id: 'point',
-      source: 'single-point',
-      type: 'circle',
-      paint: {
-        'circle-radius': 10,
-        'circle-color': '#448ee4'
-      }
-    });
+//     map.addLayer({
+//       id: 'point',
+//       source: 'single-point',
+//       type: 'circle',
+//       paint: {
+//         'circle-radius': 10,
+//         'circle-color': '#448ee4'
+//       }
+//     });
   
-    // Listen for the `result` event from the Geocoder
-    // `result` event is triggered when a user makes a selection
-    //  Add a marker at the result's coordinates
-    geocoder.on('result', (event) => {
-      map.getSource('single-point').setData(event.result.geometry);
-    });
-  });
+//     // Listen for the `result` event from the Geocoder
+//     // `result` event is triggered when a user makes a selection
+//     //  Add a marker at the result's coordinates
+//     geocoder.on('result', (event) => {
+//       map.getSource('single-point').setData(event.result.geometry);
+//     });
+//   });
 
 
-}
+// }
 function testFetch() {
 fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/donut.json?type=poi&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`, {
   method: 'GET', //GET is the default.
@@ -131,9 +157,7 @@ fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/donut.json?type=poi&pro
 
 
 
-function noGeoSearchMap() {
 
-};
 
 function testMarker (data) {
     console.log(data)
@@ -219,3 +243,4 @@ function testMarker (data) {
 //     map.getSource('single-point').setData(event.result.geometry);
 //   });
 // });
+}
