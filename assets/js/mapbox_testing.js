@@ -4,9 +4,11 @@ var long;
 var map;
 var playDateMapBoxToken = 'pk.eyJ1IjoibWFya2dhdHgiLCJhIjoiY2w5MndoNDVqMDEwZDN5bXBiOTZseTYyMSJ9.-ZUmZXLJEzZyTkCwSBMGuw';
 var goodWeatherCodes = [800, 801, 802, 803, 804, 741]
-var goodWeatherSearches = ['playground_', 'hike_', 'lake_', 'zoo_']
+//replace spaces with %20 when in production
+var goodWeatherSearches = ['playground_', 'hike_', 'lake_', 'zoo_', 'ice cream_', 'pastry_', 'track', 'state park ']
 var badWeatherSearches = ['museum_', 'movie_', 'library_', 'craft_', 'theater_']
 var iconCode
+var activityFetchUrls = [];
 
 //Check for geolocation in browser
 if ('geolocation' in navigator) {
@@ -38,6 +40,28 @@ function noGeoSearchMap() {
             buildMaps();
         });
 };
+
+//populate searches based on weather codes
+function getSearchTopicsFromWeather() {
+    if (goodWeatherCodes.includes(iconCode)) {
+        //get 5 random search results to pass to page for good weather.
+        for (let i = 0; i < 5; i++) {
+            activityIndex = Math.floor(Math.random() * goodWeatherSearches.length);
+            console.log(activityIndex);
+            let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?limit=5&proximity=${long}%2C${lat}&language=en-US&access_token=pk.eyJ1IjoibWFya2dhdHgiLCJhIjoiY2w5MndoNDVqMDEwZDN5bXBiOTZseTYyMSJ9.-ZUmZXLJEzZyTkCwSBMGuw`;
+            activityFetchUrls.push(fetchURL);
+        }
+    } else {
+        for (let i = 0; i < 5; i++) {
+            activityIndex = Math.floor(Math.random() * badWeatherSearches.length);
+            console.log(activityIndex);
+            let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?limit=5&proximity=${long}%2C${lat}&language=en-US&access_token=pk.eyJ1IjoibWFya2dhdHgiLCJhIjoiY2w5MndoNDVqMDEwZDN5bXBiOTZseTYyMSJ9.-ZUmZXLJEzZyTkCwSBMGuw`;
+            activityFetchUrls.push(fetchURL);
+        }
+    }
+    fetchAllTheThings ();
+}
+
 
 function testFetch() {
     fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/donut.json?type=poi&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`, {
@@ -129,36 +153,35 @@ function buildMaps() {
             latitude: lat
         } //local coordinates
     });
-
+    //comment out past here once search terms are set
     // Add the geocoder to the map
-    // map.addControl(geocoder);
+    map.addControl(geocoder);
 
 
-    // map.on('load', () => {
-    //     map.addSource('single-point', {
-    //       type: 'geojson',
-    //       data: {
-    //         type: 'FeatureCollection',
-    //         features: []
-    //       }
-    //     });
+    map.on('load', () => {
+        map.addSource('single-point', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: []
+            }
+        });
 
-    //     map.addLayer({
-    //       id: 'point',
-    //       source: 'single-point',
-    //       type: 'circle',
-    //       paint: {
-    //         'circle-radius': 10,
-    //         'circle-color': '#448ee4'
-    //       }
-    //     });
+        map.addLayer({
+            id: 'point',
+            source: 'single-point',
+            type: 'circle',
+            paint: {
+                'circle-radius': 10,
+                'circle-color': '#448ee4'
+            }
+        });
 
-    //     // Listen for the `result` event from the Geocoder
-    //     // `result` event is triggered when a user makes a selection
-    //     //  Add a marker at the result's coordinates
-    //     geocoder.on('result', (event) => {
-    //       map.getSource('single-point').setData(event.result.geometry);
-    //     });
-    //   });
-    // }
+        // Listen for the `result` event from the Geocoder
+        // `result` event is triggered when a user makes a selection
+        //  Add a marker at the result's coordinates
+        geocoder.on('result', (event) => {
+            map.getSource('single-point').setData(event.result.geometry);
+        });
+    });
 }
