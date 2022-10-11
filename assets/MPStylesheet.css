@@ -1,0 +1,19 @@
+#aside {
+    height: 100vh;
+    margin-top: 15px;
+}
+
+#section {
+    height:100vh;
+}
+
+#info {
+    width: 72vw;
+    height: 20%;
+    align-items: flex-end;
+    justify-content: end;
+}
+
+.map {
+    height: 60%;
+}
