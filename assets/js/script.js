@@ -2,7 +2,8 @@
 var lat;
 var long;
 var playDateMapBoxToken = 'pk.eyJ1IjoibWFya2dhdHgiLCJhIjoiY2w5MndoNDVqMDEwZDN5bXBiOTZseTYyMSJ9.-ZUmZXLJEzZyTkCwSBMGuw';
-// variable for weather icons
+var weatherAreaEl= $("#weather-area");
+// variable for weather icons, to be used for further search terms
 var iconCode;
 //weatherbit.io API retrieval
 var weatherAPIKey = "54d824ecca864b9dbe80b3b774711d3a";
@@ -10,27 +11,26 @@ var queryUrl = "https://api.weatherbit.io/v2.0/current?lat=";
 //retrieving weather at current location
 var weatherIconList = "https://www.weatherbit.io/static/img/icons/";
 //function to retrieve weather data
-function geolocationWeather(){
+function geolocationWeather(coordinateUrl){
   var coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
   fetch(coordinateUrl).then(function (response) {
     if (response.ok){
       response.json().then(function weatherDataHere() {
         //create section for weather display
-        var weatherHereEl = $(`<div>`).attr({id: "weather-display"});
+        var weatherHereEl = $(`<div>`).attr({id:"weather-display"});
         //obtain weather icons from API
         var weatherIcon = weatherDataHere.data.weather.icon;
         var weatherIconUrl = weatherIconList + weatherIcon + '.png';
         //update iconCode
-        var iconCodeUrl = weatherDataHere.data.weather.code;
-        iconCode += iconCodeUrl;
-        //add in image element for weather icon
+        iconCode += weatherDataHere.data.weather.code;
+        //create image element for weather icon
         var weatherIconImg = $(`<img>`).attr({
           id: 'weather-icon',
           src: weatherIconUrl,
           alt: 'Image of simple weather icon',
         })
-        //create unordered list of desired weather details
-        var weatherListEl = $(`<ul>`)
+        //create unordered list of weather details
+        var weatherListEl = $(`<ul>`);
         var weatherDetails = [
           "Temperature: " + data.temp + " °F",
           "Wind: " + data.wind_spd + " Miles per Hour",
@@ -42,8 +42,10 @@ function geolocationWeather(){
           var weatherItems = $(`<li>`).text(weatherDetails[x])
           weatherListEl.append(weatherItems);
         }
+        $('#weather-area').before(weatherHereEl);
         weatherHereEl.append(weatherIconImg);
         weatherHereEl.append(weatherListEl);
+        weatherAreaEl.append(weatherHereEl);
       })
     }
   })
