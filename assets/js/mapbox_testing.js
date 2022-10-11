@@ -175,23 +175,23 @@ function selectFiveActivities() {
     // grab 5 activities
     for (let i = 0; i < 5; i++) {
         //randomly pick activity from array 
-        // let j = Math.floor(Math.random() * (fullActivityList.length));
-        console.log(fullActivityList)
-        console.log()
-        console.log(fullActivityList[i])
+        let j = Math.floor(Math.random() * (fullActivityList[i].features.length));
+        // console.log(fullActivityList)
+        // console.log()
+        // console.log(fullActivityList[i])
         // send info to page
         // NEED DOM TO SEND TO PAGE
         //create map marker
-        var locationLong = fullActivityList[i].features[0].center[0];
+        var locationLong = fullActivityList[i].features[j].center[0];
         console.log(locationLong)
-        var locationLat = fullActivityList[i].features[0].center[1]
+        var locationLat = fullActivityList[i].features[j].center[1]
         console.log(locationLat);
-        console.log(fullActivityList[i].features[0].place_name)
-        marker = new mapboxgl.Marker() // initialize a new marker
+        console.log(fullActivityList[i].features[j].place_name)
+        marker = new mapboxgl.Marker( {color:"green", rotation:25}) // initialize a new marker
             .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
             .addTo(map); // Add the marker to the map
         //remove from the array
-        fullActivityList[i].features.splice(0, 1);
+        fullActivityList[i].features.splice(j, 1);
         console.log(fullActivityList[i])
     }
 }
