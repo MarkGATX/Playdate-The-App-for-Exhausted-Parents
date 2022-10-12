@@ -1,0 +1,37 @@
+#aside {
+    height: 100vh;
+    margin-top: 15px;
+}
+
+#section {
+    height:100vh;
+}
+
+#info {
+    width: 72vw;
+    height: 20%;
+    align-items: flex-end;
+    justify-content: end;
+}
+
+.map {
+    height: 60%;
+}
+
+.nav-weather {
+    width: 152px;
+}
+
+.collapsible-header {
+    max-height: 57px;
+}
+
+.material-icons {
+    position: relative;
+    bottom: 17px;
+}
+
+.activities {
+    padding: 15px;
+    margin: 7px;
+}
