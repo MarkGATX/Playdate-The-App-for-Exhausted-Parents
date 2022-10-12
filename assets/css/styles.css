@@ -7,7 +7,6 @@ body {
     padding: 0;
 }
 
-
 /* ids */
 #map {
     position: absolute;
@@ -16,5 +15,10 @@ body {
     width: 100%;
 }
 
+#weather-area {
+    height: 50%;
+    border: .1rem solid black;
+}
 
 /* classes */
+

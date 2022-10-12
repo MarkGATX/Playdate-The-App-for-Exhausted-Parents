@@ -1,18 +1,54 @@
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-  <meta charset='utf-8' />
-  <title>Local search app</title>
-  <meta name='viewport' content='width=device-width, initial-scale=1' />
-  <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js'></script>
-  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css'  />
-  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
-  <link rel='stylesheet' href="./assets/css/styles.css" />
-  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
-</head>
-<body>
-    <div id='map'></div>
-<script src="./assets/js/script.js"></script>
+  <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 
-</body>
-</html>
+      <!--Let browser know website is optimized for mobile-->
+      <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js'></script>
+      <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css'  />
+      <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
+      <link rel='stylesheet' href="./assets/css/styles.css" />
+      <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
+      <title>Playdate App</title>
+    </head>
+
+    <body>
+        <!-- nav bar w/ logo and options -->
+        <nav>
+            <div class="nav-wrapper blue">
+                <a href="" class="brand logo">Playdate App</a>
+                <ul class="right hide-on-small" id="nav-mobile">
+                    <div id="weather-area"><a href ="#">weather</a></div>
+                </ul>
+            </div>
+        </nav>
+
+         <!-- start button on introduction page -->
+        <div>
+          <div class="valign-wrapper center-align" id="str-btn">
+            <a class="btn-large waves-effect waves-light container blue z-depth-5"><i class="material-icons right">event_available</i>Start</a>
+          </div>
+          
+          <!-- subtitle on intoduction page -->
+          <div class="row valign-wrapper">
+              <div class="col s12 m5 z-depth-5">
+                <div class="card-panel blue">
+                    <span class="white-text">I am a very simple card. I am good at containing small bits of information.
+                    I am convenient because I require little markup to use effectively. I am similar to what is called a panel in other frameworks.
+                    </span>
+                </div>
+              </div>
+          </div>
+        </div> 
+
+      <!--Import jQuery before materialize.js-->
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+      <script src='./assets/js/script.js'></script>
+    </body>
+  </html>
