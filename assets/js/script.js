@@ -24,10 +24,7 @@ mapMarkers = ['marker0', 'marker1', 'marker2', 'marker3', 'marker4']
 //functions for geolocation, have to be initialized before called in geolocation
 function success(lat, long) {
     logLatLong(lat, long);
-    minLong = long - .5;
-    maxLong = long + .5;
-    minLat = lat - .5;
-    maxLat = lat + .5;
+
     // testFetch();
     // buildMaps();
 }
@@ -216,6 +213,10 @@ function selectFiveActivities() {
 function logLatLong(latitude, longitude) {
     lat = latitude;
     long = longitude;
+    minLong = long - .5;
+    maxLong = long + .5;
+    minLat = lat - .5;
+    maxLat = lat + .5;
     buildMaps();
 }
 
