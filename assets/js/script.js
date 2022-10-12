@@ -30,7 +30,7 @@ mapMarkers = ['marker0', 'marker1', 'marker2', 'marker3', 'marker4']
 
 //functions for geolocation, have to be initialized before called in geolocation
 function success(lat, long) {
-    coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
+
     logLatLong(lat, long);
 }
 
@@ -204,7 +204,8 @@ function fetchAllTheThings() {
         }))
     }
     Promise.all(promises).then(response => Promise.all(response.map(item => item.json()))).then(response => randomizeActivityList(response)).catch((error) => {
-        console.error(error);});
+        console.error(error);
+    });
 }
 
 
@@ -235,6 +236,7 @@ function selectFiveActivities() {
         for (let i = 0; i < 5; i++) {
             //randomly pick activity from array 
             console.log(fullActivityList[i].features.length)
+            let featureAddress = ""
             let j = Math.floor(Math.random() * (fullActivityList[i].features.length));
             // send info to page
             // NEED DOM TO SEND TO PAGE
@@ -244,16 +246,26 @@ function selectFiveActivities() {
             console.log(fullActivityList[i].features[j].place_name)
             var activityListEl = document.createElement('li');
             console.log(activityListEl)
+            //if address not defined in results, pass along empty string in variable, else pass along address. use variable in calls
             if (fullActivityList[i].features[j].properties.address === undefined) {
-                activityListEl.innerHTML = `${fullActivityList[i].features[j].text}<p></p>`;
+                featureAddress = ""
             } else {
-            activityListEl.innerHTML = `${fullActivityList[i].features[j].text}<p>${fullActivityList[i].features[j].properties.address}</p>`;
+                featureAddress = fullActivityList[i].features[j].properties.address;
             }
+            activityListEl.innerHTML = `<h3>${fullActivityList[i].features[j].text}</h3><p>${featureAddress}</p><p>${fullActivityList[i].features[j].properties.category}`;
+
             console.log(activityListEl)
             activityListParent.appendChild(activityListEl);
 
             marker = new mapboxgl.Marker({ color: "green", rotation: 25 }) // initialize a new marker
                 .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
+                .setPopup(
+                    new mapboxgl.Popup({ offset: 25 }) // add popups
+                        .setHTML(
+                            `<h4>${fullActivityList[i].features[j].text}</h4><p>${featureAddress}</p>`
+
+                        )
+                )
                 .addTo(map); // Add the marker to the map
             //remove from the array
             console.log(fullActivityList[i].features)
@@ -268,14 +280,11 @@ function selectFiveActivities() {
 function logLatLong(latitude, longitude) {
     lat = latitude;
     long = longitude;
+    coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
     minLong = long - .5;
-    console.log(minLong)
     maxLong = long + .5;
-    console.log(maxLong)
     minLat = lat - .5;
-    console.log(minLat)
     maxLat = lat + .5;
-    console.log(maxLat)
     buildMaps();
 }
 

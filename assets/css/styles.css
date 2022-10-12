@@ -53,6 +53,10 @@ body {
     height: 60%;
 }
 
+.mapboxgl-marker:hover {
+    cursor: pointer;
+}
+
 .nav-weather {
     width: 152px;
 }
