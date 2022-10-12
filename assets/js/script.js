@@ -24,7 +24,10 @@ mapMarkers = ['marker0', 'marker1', 'marker2', 'marker3', 'marker4']
 //functions for geolocation, have to be initialized before called in geolocation
 function success(lat, long) {
     logLatLong(lat, long);
-
+    minLong = long - .5;
+    maxLong = long + .5;
+    minLat = lat - .5;
+    maxLat = lat + .5;
     // testFetch();
     // buildMaps();
 }
@@ -213,10 +216,6 @@ function selectFiveActivities() {
 function logLatLong(latitude, longitude) {
     lat = latitude;
     long = longitude;
-    minLong = long - .5;
-    maxLong = long + .5;
-    minLat = lat - .5;
-    maxLat = lat + .5;
     buildMaps();
 }
 
@@ -235,6 +234,10 @@ function buildMaps() {
     const marker = new mapboxgl.Marker() // initialize a new marker for current location
         .setLngLat([long, lat]) // Marker [lng, lat] coordinates
         .addTo(map); // Add the marker to the map
+    minLong = long - .5;
+    maxLong = long + .5;
+    minLat = lat - .5;
+    maxLat = lat + .5;
     const geocoder = new MapboxGeocoder({
         // Initialize the geocoder -- allows active search on map
         accessToken: playDateMapBoxToken, // Set the access token
