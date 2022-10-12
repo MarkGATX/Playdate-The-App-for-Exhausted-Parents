@@ -1,89 +1,42 @@
 //set global variables
-var lat;
-var long;
-var minLat;
-var minLong;
-var maxLat;
-var maxLong;
+var lat = 0;
+var long = 0;
+var minLat = 0;
+var minLong = 0;
+var maxLat = 0;
+var maxLong = 0;
 var map;
 var playDateMapBoxToken = 'pk.eyJ1IjoibWFya2dhdHgiLCJhIjoiY2w5MndoNDVqMDEwZDN5bXBiOTZseTYyMSJ9.-ZUmZXLJEzZyTkCwSBMGuw';
 var goodWeatherCodes = [800, 801, 802, 803, 804, 741]
 //replace spaces with %20 when in production
-var goodWeatherSearches = ['playground%20', 'hike%20', 'lake%20', 'zoo%20', 'ice%20cream%20',  'track', 'state%20park%20', 'play']
+var goodWeatherSearches = ['playground%20', 'hike%20', 'lake%20', 'zoo%20', 'ice%20cream%20', 'track', 'state%20park%20', 'play']
 var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'theater%20']
 var iconCode = 800;
 var activityFetchUrls = [];
 var fullActivityList = [];
 // variable for weather icons, to be used for further search terms
-var weatherAreaEl= $("#weather-area");
+var weatherAreaEl = $("#weather-area");
 //weatherbit.io API retrieval
 var weatherAPIKey = "54d824ecca864b9dbe80b3b774711d3a";
 var queryUrl = "https://api.weatherbit.io/v2.0/current?lat=";
 //retrieving weather at current location
 var weatherIconList = "https://www.weatherbit.io/static/img/icons/";
+var coordinateUrl
+var activityListParent = document.querySelector('.activities');
 
 //create variables for possible marker interactivity
-// for (var i = 0; i < 5; ++i) {
-//     this["marker"+i] = "some stuff";
-// }
 mapMarkers = ['marker0', 'marker1', 'marker2', 'marker3', 'marker4']
 
 
 //functions for geolocation, have to be initialized before called in geolocation
 function success(lat, long) {
+    coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
     logLatLong(lat, long);
-    minLong = long - .5;
-    maxLong = long + .5;
-    minLat = lat - .5;
-    maxLat = lat + .5;
-    // testFetch();
-    // buildMaps();
 }
 
 function error() {
     alert(`Sorry, no position available. ERROR(${error.code}): ${error.message}.`);
     // noGeoSearchMap();
-}
-
-//function to retrieve weather data
-function geolocationWeather(coordinateUrl){
-  var coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
-  fetch(coordinateUrl).then(function (response) {
-    if (response.ok){
-      response.json().then(function weatherDataHere() {
-        //create section for weather display
-        var weatherHereEl = $(`<div>`).attr({id:"weather-display"});
-        //obtain weather icons from API
-        var weatherIcon = weatherDataHere.data.weather.icon;
-        var weatherIconUrl = weatherIconList + weatherIcon + '.png';
-        //update iconCode
-        iconCode += weatherDataHere.data.weather.code;
-        //create image element for weather icon
-        var weatherIconImg = $(`<img>`).attr({
-          id: 'weather-icon',
-          src: weatherIconUrl,
-          alt: 'Image of simple weather icon',
-        })
-        //create unordered list of weather details
-        var weatherListEl = $(`<ul>`);
-        var weatherDetails = [
-          "Temperature: " + data.temp + " °F",
-          "Wind: " + data.wind_spd + " Miles per Hour",
-          "Humidity: " + data.rh + "%",
-          "UV Index: " + data.uv
-        ]
-        //add in the API-listed weather details
-        for (var x = 0; x < weatherDetails.length; x++){
-          var weatherItems = $(`<li>`).text(weatherDetails[x])
-          weatherListEl.append(weatherItems);
-        }
-        $('#weather-area').before(weatherHereEl);
-        weatherHereEl.append(weatherIconImg);
-        weatherHereEl.append(weatherListEl);
-        weatherAreaEl.append(weatherHereEl);
-      })
-    }
-  })
 }
 
 const options = {
@@ -92,6 +45,48 @@ const options = {
     timeout: 27000
 };
 
+//function to retrieve weather data
+function geolocationWeather(coordinateUrl) {
+    fetch(coordinateUrl).then(function (response) {
+        if (response.ok) {
+            response.json().then(function weatherDataHere() {
+                //create section for weather display
+                var weatherHereEl = $(`<div>`).attr({ id: "weather-display" });
+                //obtain weather icons from API
+                var weatherIcon = weatherDataHere.data.weather.icon;
+                var weatherIconUrl = weatherIconList + weatherIcon + '.png';
+                //update iconCode
+                iconCode += weatherDataHere.data.weather.code;
+                //create image element for weather icon
+                var weatherIconImg = $(`<img>`).attr({
+                    id: 'weather-icon',
+                    src: weatherIconUrl,
+                    alt: 'Image of simple weather icon',
+                })
+                //create unordered list of weather details
+                var weatherListEl = $(`<ul>`);
+                var weatherDetails = [
+                    "Temperature: " + data.temp + " °F",
+                    "Wind: " + data.wind_spd + " Miles per Hour",
+                    "Humidity: " + data.rh + "%",
+                    "UV Index: " + data.uv
+                ]
+                //add in the API-listed weather details
+                for (var x = 0; x < weatherDetails.length; x++) {
+                    var weatherItems = $(`<li>`).text(weatherDetails[x])
+                    weatherListEl.append(weatherItems);
+                }
+                $('#weather-area').before(weatherHereEl);
+                weatherHereEl.append(weatherIconImg);
+                weatherHereEl.append(weatherListEl);
+                weatherAreaEl.append(weatherHereEl);
+            })
+        }
+    })
+}
+
+
+
 //Check for geolocation in browser
 if ('geolocation' in navigator) {
     console.log('geolocation is available');
@@ -99,7 +94,6 @@ if ('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition((position) => {
         success(position.coords.latitude, position.coords.longitude);
     }, error, options);
-
 } else {
     console.log(' geolocation IS NOT available ');
     // send to location search... not necessary for basic function
@@ -109,45 +103,50 @@ if ('geolocation' in navigator) {
 
 // if no geolocation available (need to redirect to different page) or if declined permission -- beyond basic functionality so may not need
 //function noGeoSearchMap() {
-    //console.log('ping');
-    //need input to city city data.
-    // noGeoCitySearch = input.value -- pass to fetch request
-    //fetchURL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/boston.json?&access_token=' + playDateMapBoxToken;
-    //fetch(fetchURL, {
-        //method: 'GET', //GET is the default.
-        //credentials: 'same-origin', // include, *same-origin, omit
-        //redirect: 'follow', // manual, *follow, error
-    //})
-        //.then(function (response) {
-            //return response.json();
-       // })
-        //.then(function (data) {
-            //console.log(data);
-            //long = data.features[0].geometry.coordinates[0];
-            //lat = data.features[0].geometry.coordinates[1];
-            //buildMaps();
-        //});
+//console.log('ping');
+//need input to city city data.
+// noGeoCitySearch = input.value -- pass to fetch request
+//fetchURL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/boston.json?&access_token=' + playDateMapBoxToken;
+//fetch(fetchURL, {
+//method: 'GET', //GET is the default.
+//credentials: 'same-origin', // include, *same-origin, omit
+//redirect: 'follow', // manual, *follow, error
+//})
+//.then(function (response) {
+//return response.json();
+// })
+//.then(function (data) {
+//console.log(data);
+//long = data.features[0].geometry.coordinates[0];
+//lat = data.features[0].geometry.coordinates[1];
+//buildMaps();
+//});
 //};
 
 
 //populate searches based on weather codes
 async function getSearchTopicsFromWeather() {
+    activityFetchUrls = [];
     if (goodWeatherCodes.includes(iconCode)) {
         //get unique random numbers
         let goodWeatherIndexArray = [];
         for (let i = 0; i < goodWeatherCodes.length; i++) {
             goodWeatherIndexArray.push(i);
+            console.log(goodWeatherIndexArray)
         }
         for (let i = goodWeatherIndexArray.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [goodWeatherIndexArray[i], goodWeatherIndexArray[j]] = [goodWeatherIndexArray[j], goodWeatherIndexArray[i]];
         }
+        console.log(goodWeatherIndexArray)
         //get results to pass to page for good weather.
         for (let i = 0; i < 5; i++) {
             activityIndex = goodWeatherIndexArray[i];
+            console.log(activityIndex)
             let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
             console.log(fetchUrl)
             activityFetchUrls.push(fetchUrl);
+            console.log('5 topic array:  ' + activityFetchUrls)
         }
     } else {
         //get unique random numbers
@@ -161,13 +160,12 @@ async function getSearchTopicsFromWeather() {
         }
         for (let i = 0; i < 5; i++) {
             activityIndex = badWeatherIndexArray[i];
-            let fetchUrl2 = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
-            activityFetchUrls.push(fetchUrl2);
+            let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
+            activityFetchUrls.push(fetchUrl);
         }
     }
     console.log(activityFetchUrls);
     fetchAllTheThings();
-    // randomizeActivityList(allThings);
 }
 
 
@@ -196,6 +194,7 @@ async function getSearchTopicsFromWeather() {
 
 function fetchAllTheThings() {
     var promises = [];
+    console.log(activityFetchUrls)
     for (let i = 0; i < activityFetchUrls.length; i++) {
         console.log(activityFetchUrls[i])
         promises.push(fetch(activityFetchUrls[i], {
@@ -204,7 +203,8 @@ function fetchAllTheThings() {
             redirect: 'follow', // manual, *follow, error)
         }))
     }
-    Promise.all(promises).then(response => Promise.all(response.map(item => item.json()))).then(response => randomizeActivityList(response))
+    Promise.all(promises).then(response => Promise.all(response.map(item => item.json()))).then(response => randomizeActivityList(response)).catch((error) => {
+        console.error(error);});
 }
 
 
@@ -212,49 +212,55 @@ function fetchAllTheThings() {
 //randomize fullActivityList
 function randomizeActivityList(allThings) {
     console.log(allThings)
-
     for (let i = allThings.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [allThings[i], allThings[j]] = [allThings[j], allThings[i]];
     }
+    console.log(allThings)
     // save activity list to local storage
     localStorage.setItem("localStorageActivityList", JSON.stringify(allThings));
     selectFiveActivities();
+    return
 }
 
 
 //randomly select Five Activities, send to page, and add marker
 function selectFiveActivities() {
     fullActivityList = JSON.parse(localStorage.getItem('localStorageActivityList'));
-
     if (fullActivityList.length <= 0) {
         getSearchTopicsFromWeather();
         return;
-    }
-    // grab 5 activities
-    for (let i = 0; i < 5; i++) {
-        //randomly pick activity from array 
-        let j = Math.floor(Math.random() * (fullActivityList[i].features.length));
-        // console.log(fullActivityList)
-        // console.log()
-        // console.log(fullActivityList[i])
-        // send info to page
-        // NEED DOM TO SEND TO PAGE
-        //create map marker
-        var locationLong = fullActivityList[i].features[j].center[0];
-        console.log(locationLong)
-        var locationLat = fullActivityList[i].features[j].center[1]
-        console.log(locationLat);
-        console.log(fullActivityList[i].features[j].place_name)
+    } else {
+        // grab 5 activities
+        for (let i = 0; i < 5; i++) {
+            //randomly pick activity from array 
+            console.log(fullActivityList[i].features.length)
+            let j = Math.floor(Math.random() * (fullActivityList[i].features.length));
+            // send info to page
+            // NEED DOM TO SEND TO PAGE
+            //create map marker
+            var locationLong = fullActivityList[i].features[j].center[0];
+            var locationLat = fullActivityList[i].features[j].center[1]
+            console.log(fullActivityList[i].features[j].place_name)
+            var activityListEl = document.createElement('li');
+            console.log(activityListEl)
+            if (fullActivityList[i].features[j].properties.address === undefined) {
+                activityListEl.innerHTML = `${fullActivityList[i].features[j].text}<p></p>`;
+            } else {
+            activityListEl.innerHTML = `${fullActivityList[i].features[j].text}<p>${fullActivityList[i].features[j].properties.address}</p>`;
+            }
+            console.log(activityListEl)
+            activityListParent.appendChild(activityListEl);
 
-
-        marker = new mapboxgl.Marker( {color:"green", rotation:25}) // initialize a new marker
-            .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
-            .addTo(map); // Add the marker to the map
-        //remove from the array
-        fullActivityList[i].features.splice(j, 1);
-        console.log(fullActivityList[i])
-        console.log(mapMarkers)
+            marker = new mapboxgl.Marker({ color: "green", rotation: 25 }) // initialize a new marker
+                .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
+                .addTo(map); // Add the marker to the map
+            //remove from the array
+            console.log(fullActivityList[i].features)
+            fullActivityList[i].features.splice(j, 1);
+            console.log(fullActivityList[i].features)
+        }
+        localStorage.setItem('localStorageActivityList', JSON.stringify(fullActivityList));
     }
 }
 
@@ -262,6 +268,14 @@ function selectFiveActivities() {
 function logLatLong(latitude, longitude) {
     lat = latitude;
     long = longitude;
+    minLong = long - .5;
+    console.log(minLong)
+    maxLong = long + .5;
+    console.log(maxLong)
+    minLat = lat - .5;
+    console.log(minLat)
+    maxLat = lat + .5;
+    console.log(maxLat)
     buildMaps();
 }
 
@@ -272,7 +286,7 @@ function buildMaps() {
         container: 'map', // Container ID
         style: 'mapbox://styles/mapbox/streets-v11', // Map style to use
         center: [long, lat], // Starting position [lng, lat]
-        pitch:60,
+        pitch: 60,
         zoom: 12, // Starting zoom level
     });
 
@@ -280,12 +294,8 @@ function buildMaps() {
     const marker = new mapboxgl.Marker() // initialize a new marker for current location
         .setLngLat([long, lat]) // Marker [lng, lat] coordinates
         .addTo(map); // Add the marker to the map
-    minLong = long - .5;
-    maxLong = long + .5;
-    minLat = lat - .5;
-    maxLat = lat + .5;
+    //Initialize the geocoder -- allows active search on map
     const geocoder = new MapboxGeocoder({
-        // Initialize the geocoder -- allows active search on map
         accessToken: playDateMapBoxToken, // Set the access token
         placeholder: 'Search for nearby places',
         mapboxgl: mapboxgl, // Set the mapbox-gl instance
@@ -296,13 +306,6 @@ function buildMaps() {
             latitude: lat
         } //local coordinates
     });
-
-
-
-
-
-
-
 
     //comment out past here once search terms are set
     // Add the geocoder to the map - allows search terms on map
@@ -373,13 +376,13 @@ function buildMaps() {
 
 
 //   navigator.geolocation.clearWatch(watchID); --- stop watching position
-  //};
-  
-  //grabs position once 
-navigator.geolocation.getCurrentPosition((position) => {
-    success(position.coords.latitude, position.coords.longitude);
-    console.log(lat);
-    console.log(long);
-    var coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
-    console.log(coordinateUrl);
-  }, error,options);
+//};
+
+//grabs position once 
+// navigator.geolocation.getCurrentPosition((position) => {
+//     success(position.coords.latitude, position.coords.longitude);
+//     console.log(lat);
+//     console.log(long);
+//     var coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
+//     console.log(coordinateUrl);
+// }, error, options);
