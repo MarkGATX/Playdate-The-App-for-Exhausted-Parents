@@ -16,13 +16,16 @@
       <title>Playdate App</title>
     </head>
 
-    <body>
+    <body class="splash">
         <!-- nav bar w/ logo and options -->
         <nav>
             <div class="nav-wrapper blue">
-                <a href="" class="brand logo">Playdate App</a>
-                <ul class="right hide-on-small" id="nav-mobile">
-                    <li id="weather-area"><a href ="#">weather</a></li>
+                <a href="" class="brand logo" id="appTitle">Playdate App</a>
+                <ul id="nav-mobile" class="collapsible popout right hide-on-med-and-down" data-collapsible="accordion">
+                  <li class="nav-weather">
+                    <div class="collapsible-header light-blue"><i class="material-icons" id="alignIcon">filter_drama</i>Weather</div>
+                    <div class="collapsible-body"><span>Lorem ipsum </span></div> 
+                  </li>
                 </ul>
             </div>
         </nav>
@@ -34,7 +37,7 @@
           </div>
           
           <!-- subtitle on intoduction page -->
-          <div class="row valign-wrapper">
+          <div class="row valign-wrapper" id="align">
               <div class="col s12 m5 z-depth-5">
                 <div class="card-panel blue">
                     <span class="white-text">I am a very simple card. I am good at containing small bits of information.
