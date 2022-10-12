@@ -5,9 +5,10 @@
 body {
     margin: 0;
     padding: 0;
-    background-image:url('https://images2.minutemediacdn.com/image/upload/c_fill,w_720,ar_16:9,f_auto,q_auto,g_auto/shape/cover/sport/64488-gettyimages-155376463-8998e5b17fa838e284c7f292f76b3fa4.jpg');
-    background-size: cover;
+   
 }
+
+
 
 /* ids */
 #map {
@@ -52,6 +53,10 @@ body {
     height: 60%;
 }
 
+.mapboxgl-marker:hover {
+    cursor: pointer;
+}
+
 .nav-weather {
     width: 152px;
 }
@@ -68,4 +73,9 @@ body {
 .activities {
     padding: 15px;
     margin: 7px;
+}
+
+.splash {
+    background-image:url('https://images2.minutemediacdn.com/image/upload/c_fill,w_720,ar_16:9,f_auto,q_auto,g_auto/shape/cover/sport/64488-gettyimages-155376463-8998e5b17fa838e284c7f292f76b3fa4.jpg');
+    background-size: cover;
 }

@@ -6,7 +6,11 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <!--Import materialize.css-->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-        <link rel="stylesheet" href="./assets/css/styles.css">
+        <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js'></script>
+      <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css'  />
+      <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
+      <link rel='stylesheet' href="./assets/css/styles.css" />
+      <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
         <title>Playdate App</title>
         </head>
 
@@ -31,11 +35,11 @@
             <div class="col s3 white" id="aside">
                 <input class="white" placeholder="search"></input>
                 <ul class="activities">
-                    <li>Movie Theater</li>
+                    <!-- <li>Movie Theater</li>
                     <li>Museum</li>
                     <li>Trampoline Park</li>
                     <li>Play Ground</li>
-                    <li>Restaurants</li>
+                    <li>Restaurants</li> -->
                 </ul>
                 <div class="card">
                     <h5>Suggested Activities:</h5>
@@ -47,16 +51,17 @@
         <!-- grid containing right section -->
             <div class="col s9 yellow" id="section">
                 <h2>Map</h2>
-                <div class="map"><img src="" alt=""></div>
+                <div id="map"></div>
                     <div class="white" id="info">
                         <p>Brief description, location</p>
                     </div>  
             </div>    
 
         </div>
-
-
         <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+        <script src='./assets/js/script.js'></script>
     </body>
     </html>
