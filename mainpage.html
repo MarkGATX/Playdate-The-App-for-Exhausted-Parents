@@ -32,36 +32,89 @@
         <!-- grid containing aside -->
         <div class="row">
 
+            <nav class="cyan accent-1">
+                <div class="nav-wrapper">
+                  <div class="col s12 black-text">
+                    <a href="#!" class="breadcrumb black-text">First</a>
+                    <a href="#!" class="breadcrumb black-text">Second</a>
+                  </div>
+                </div>
+            </nav>
+
             <div class="col s3 white" id="aside">
                 <input class="white" placeholder="search"></input>
-                <ul class="activities">
+                <ul class="activities card-panel hoverable light-blue lighten 2">
                     <!-- <li>Movie Theater</li>
                     <li>Museum</li>
                     <li>Trampoline Park</li>
                     <li>Play Ground</li>
                     <li>Restaurants</li> -->
                 </ul>
-                <div class="card">
-                    <h5>Suggested Activities:</h5>
-                    <p>Colorado River on Lake Austin</p>
-                    <p>Six Flags Fiesta Texas</p>
+                <div class="card card-panel hoverable light-blue lighten 3">
+                    <a class='dropdown-button btn cyan accent-1 black-text' href='#' data-activates='dropdown1'>Suggested Activities</a>
+                    <ul id='dropdown1' class='dropdown-content'>
+                        <li><a href="#!">Colorado River on Lake Austin</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#!">Six Flags Fiesta Texas</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#!">three</a></li>
+                      </ul>
                 </div>
             </div>
             
         <!-- grid containing right section -->
-            <div class="col s9 yellow" id="section">
+            <div class="col s9 light-blue lighten 2 z-depth-5" id="section">
                 <h2>Map</h2>
-                <div id="map"></div>
-                    <div class="white" id="info">
-                        <p>Brief description, location</p>
-                    </div>  
+                <div class="map"></div>
+                    <div class="row">
+                        <div class="col s12 m7">
+                            <div class="card">
+                                <div>
+                                    <span class="card-title">Card Title</span>
+                                </div>
+                                <div class="card-content">
+                                    <p>I am a very simple card. I am good at containing small bits of information.
+                                    I am convenient because I require little markup to use effectively.</p>
+                                </div>
+                                <div class="card-action">
+                                <a href="#">This is a link</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>    
 
         </div>
+        <!-- footer is here -->
+        <footer class="page-footer light-blue lighten 4">
+            <div class="container">
+              <div class="row">
+                <div class="col l6 s12">
+                  <h5 class="white-text">Footer Content</h5>
+                  <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+                </div>
+                <div class="col 4 offset-10 s12">
+                  <h5 class="white-text">Links</h5>
+                  <ul>
+                    <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
+                    <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
+                    <li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
+                    <li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="footer-copyright">
+              <div class="container">
+              © 2014 Copyright Text
+              <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+              </div>
+            </div>
+          </footer>
         <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
         <script src='./assets/js/script.js'></script>
     </body>
-    </html>
+</html>
