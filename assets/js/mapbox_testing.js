@@ -1,20 +1,32 @@
 //set global variables
 var lat;
 var long;
+var minLat;
+var minLong;
+var maxLat;
+var maxLong;
 var map;
 var playDateMapBoxToken = 'pk.eyJ1IjoibWFya2dhdHgiLCJhIjoiY2w5MndoNDVqMDEwZDN5bXBiOTZseTYyMSJ9.-ZUmZXLJEzZyTkCwSBMGuw';
 var goodWeatherCodes = [800, 801, 802, 803, 804, 741]
 //replace spaces with %20 when in production
-var goodWeatherSearches = ['playground%20', 'hike%20', 'lake%20', 'zoo%20', 'ice%20cream%20', 'pastry%20', 'track', 'state%20park%20', 'play']
+var goodWeatherSearches = ['playground%20', 'hike%20', 'lake%20', 'zoo%20', 'ice%20cream%20',  'track', 'state%20park%20', 'play']
 var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'theater%20']
 var iconCode = 800;
 var activityFetchUrls = [];
 var fullActivityList = [];
+//create variables for possible marker interactivity
+for (var i = 0; i < 5; ++i) {
+    this["marker"+i] = "some stuff";
+}
 
 
 //functions for geolocation, have to be initialized before called in geolocation
 function success(lat, long) {
     logLatLong(lat, long);
+    minLong = long - .5;
+    maxLong = long + .5;
+    minLat = lat - .5;
+    maxLat = lat + .5;
     // testFetch();
     // buildMaps();
 }
@@ -86,7 +98,7 @@ async function getSearchTopicsFromWeather() {
         //get results to pass to page for good weather.
         for (let i = 0; i < 5; i++) {
             activityIndex = goodWeatherIndexArray[i];
-            let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
+            let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
             console.log(fetchUrl)
             activityFetchUrls.push(fetchUrl);
         }
@@ -102,7 +114,7 @@ async function getSearchTopicsFromWeather() {
         }
         for (let i = 0; i < 5; i++) {
             activityIndex = badWeatherIndexArray[i];
-            let fetchUrl2 = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
+            let fetchUrl2 = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
             activityFetchUrls.push(fetchUrl2);
         }
     }
@@ -187,13 +199,95 @@ function selectFiveActivities() {
         var locationLat = fullActivityList[i].features[j].center[1]
         console.log(locationLat);
         console.log(fullActivityList[i].features[j].place_name)
-        marker = new mapboxgl.Marker( {color:"green", rotation:25}) // initialize a new marker
+
+
+         marker= new mapboxgl.Marker( {color:"green", rotation:25}) // initialize a new marker
             .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
             .addTo(map); // Add the marker to the map
         //remove from the array
         fullActivityList[i].features.splice(j, 1);
         console.log(fullActivityList[i])
     }
+}
+
+
+function logLatLong(latitude, longitude) {
+    lat = latitude;
+    long = longitude;
+    buildMaps();
+}
+
+
+function buildMaps() {
+    mapboxgl.accessToken = playDateMapBoxToken;
+    map = new mapboxgl.Map({
+        container: 'map', // Container ID
+        style: 'mapbox://styles/mapbox/streets-v11', // Map style to use
+        center: [long, lat], // Starting position [lng, lat]
+        pitch:60,
+        zoom: 12, // Starting zoom level
+    });
+
+    //set new location marker to map
+    const marker = new mapboxgl.Marker() // initialize a new marker for current location
+        .setLngLat([long, lat]) // Marker [lng, lat] coordinates
+        .addTo(map); // Add the marker to the map
+    minLong = long - .5;
+    maxLong = long + .5;
+    minLat = lat - .5;
+    maxLat = lat + .5;
+    const geocoder = new MapboxGeocoder({
+        // Initialize the geocoder -- allows active search on map
+        accessToken: playDateMapBoxToken, // Set the access token
+        placeholder: 'Search for nearby places',
+        mapboxgl: mapboxgl, // Set the mapbox-gl instance
+        marker: true,  // Do not use the default marker style
+        bbox: [minLong, minLat, maxLong, maxLat], // Boundary for Berkeley
+        proximity: {
+            longitude: long,
+            latitude: lat
+        } //local coordinates
+    });
+
+
+
+
+
+
+
+
+    //comment out past here once search terms are set
+    // Add the geocoder to the map - allows search terms on map
+    map.addControl(geocoder);
+
+
+    map.on('load', () => {
+        map.addSource('single-point', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: []
+            }
+        });
+
+        map.addLayer({
+            id: 'point',
+            source: 'single-point',
+            type: 'circle',
+            paint: {
+                'circle-radius': 10,
+                'circle-color': '#448ee4'
+            }
+        });
+
+        // Listen for the `result` event from the Geocoder
+        // `result` event is triggered when a user makes a selection
+        //  Add a marker at the result's coordinates
+        geocoder.on('result', (event) => {
+            map.getSource('single-point').setData(event.result.geometry);
+        });
+    });
+    getSearchTopicsFromWeather();
 }
 
 
@@ -232,70 +326,3 @@ function selectFiveActivities() {
 
 
 //   navigator.geolocation.clearWatch(watchID); --- stop watching position
-
-function logLatLong(latitude, longitude) {
-    lat = latitude;
-    long = longitude;
-    buildMaps();
-}
-
-
-function buildMaps() {
-    mapboxgl.accessToken = playDateMapBoxToken;
-    map = new mapboxgl.Map({
-        container: 'map', // Container ID
-        style: 'mapbox://styles/mapbox/streets-v11', // Map style to use
-        center: [long, lat], // Starting position [lng, lat]
-        zoom: 12, // Starting zoom level
-    });
-
-    //set new location marker to map
-    const marker = new mapboxgl.Marker() // initialize a new marker
-        .setLngLat([long, lat]) // Marker [lng, lat] coordinates
-        .addTo(map); // Add the marker to the map
-
-    const geocoder = new MapboxGeocoder({
-        // Initialize the geocoder -- allows active search on map
-        accessToken: playDateMapBoxToken, // Set the access token
-        placeholder: 'Search for nearby places',
-        mapboxgl: mapboxgl, // Set the mapbox-gl instance
-        marker: false,  // Do not use the default marker style
-        // bbox: [-122.30937, 37.84214, -122.23715, 37.89838], // Boundary for Berkeley
-        proximity: {
-            longitude: long,
-            latitude: lat
-        } //local coordinates
-    });
-    //comment out past here once search terms are set
-    // Add the geocoder to the map - allows search terms on map
-    map.addControl(geocoder);
-
-
-    map.on('load', () => {
-        map.addSource('single-point', {
-            type: 'geojson',
-            data: {
-                type: 'FeatureCollection',
-                features: []
-            }
-        });
-
-        map.addLayer({
-            id: 'point',
-            source: 'single-point',
-            type: 'circle',
-            paint: {
-                'circle-radius': 10,
-                'circle-color': '#448ee4'
-            }
-        });
-
-        // Listen for the `result` event from the Geocoder
-        // `result` event is triggered when a user makes a selection
-        //  Add a marker at the result's coordinates
-        geocoder.on('result', (event) => {
-            map.getSource('single-point').setData(event.result.geometry);
-        });
-    });
-    getSearchTopicsFromWeather();
-}
