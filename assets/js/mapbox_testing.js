@@ -15,9 +15,10 @@ var iconCode = 800;
 var activityFetchUrls = [];
 var fullActivityList = [];
 //create variables for possible marker interactivity
-for (var i = 0; i < 5; ++i) {
-    this["marker"+i] = "some stuff";
-}
+// for (var i = 0; i < 5; ++i) {
+//     this["marker"+i] = "some stuff";
+// }
+mapMarkers = ['marker0', 'marker1', 'marker2', 'marker3', 'marker4']
 
 
 //functions for geolocation, have to be initialized before called in geolocation
@@ -201,12 +202,13 @@ function selectFiveActivities() {
         console.log(fullActivityList[i].features[j].place_name)
 
 
-         marker= new mapboxgl.Marker( {color:"green", rotation:25}) // initialize a new marker
+        marker = new mapboxgl.Marker( {color:"green", rotation:25}) // initialize a new marker
             .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
             .addTo(map); // Add the marker to the map
         //remove from the array
         fullActivityList[i].features.splice(j, 1);
         console.log(fullActivityList[i])
+        console.log(mapMarkers)
     }
 }
 
