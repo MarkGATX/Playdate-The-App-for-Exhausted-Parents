@@ -120,7 +120,7 @@ if ('geolocation' in navigator) {
     //})
         //.then(function (response) {
             //return response.json();
-        })
+       // })
         //.then(function (data) {
             //console.log(data);
             //long = data.features[0].geometry.coordinates[0];
@@ -373,7 +373,7 @@ function buildMaps() {
 
 
 //   navigator.geolocation.clearWatch(watchID); --- stop watching position
-  };
+  //};
   
   //grabs position once 
 navigator.geolocation.getCurrentPosition((position) => {
