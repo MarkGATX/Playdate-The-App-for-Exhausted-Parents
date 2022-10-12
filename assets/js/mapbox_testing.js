@@ -14,14 +14,6 @@ var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'th
 var iconCode = 800;
 var activityFetchUrls = [];
 var fullActivityList = [];
-// variable for weather icons, to be used for further search terms
-var weatherAreaEl= $("#weather-area");
-//weatherbit.io API retrieval
-var weatherAPIKey = "54d824ecca864b9dbe80b3b774711d3a";
-var queryUrl = "https://api.weatherbit.io/v2.0/current?lat=";
-//retrieving weather at current location
-var weatherIconList = "https://www.weatherbit.io/static/img/icons/";
-
 //create variables for possible marker interactivity
 // for (var i = 0; i < 5; ++i) {
 //     this["marker"+i] = "some stuff";
@@ -40,57 +32,19 @@ function success(lat, long) {
     // buildMaps();
 }
 
+
 function error() {
     alert(`Sorry, no position available. ERROR(${error.code}): ${error.message}.`);
     // noGeoSearchMap();
 }
 
-//function to retrieve weather data
-function geolocationWeather(coordinateUrl){
-  var coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
-  fetch(coordinateUrl).then(function (response) {
-    if (response.ok){
-      response.json().then(function weatherDataHere() {
-        //create section for weather display
-        var weatherHereEl = $(`<div>`).attr({id:"weather-display"});
-        //obtain weather icons from API
-        var weatherIcon = weatherDataHere.data.weather.icon;
-        var weatherIconUrl = weatherIconList + weatherIcon + '.png';
-        //update iconCode
-        iconCode += weatherDataHere.data.weather.code;
-        //create image element for weather icon
-        var weatherIconImg = $(`<img>`).attr({
-          id: 'weather-icon',
-          src: weatherIconUrl,
-          alt: 'Image of simple weather icon',
-        })
-        //create unordered list of weather details
-        var weatherListEl = $(`<ul>`);
-        var weatherDetails = [
-          "Temperature: " + data.temp + " °F",
-          "Wind: " + data.wind_spd + " Miles per Hour",
-          "Humidity: " + data.rh + "%",
-          "UV Index: " + data.uv
-        ]
-        //add in the API-listed weather details
-        for (var x = 0; x < weatherDetails.length; x++){
-          var weatherItems = $(`<li>`).text(weatherDetails[x])
-          weatherListEl.append(weatherItems);
-        }
-        $('#weather-area').before(weatherHereEl);
-        weatherHereEl.append(weatherIconImg);
-        weatherHereEl.append(weatherListEl);
-        weatherAreaEl.append(weatherHereEl);
-      })
-    }
-  })
-}
 
 const options = {
     enableHighAccuracy: false,
     maximumAge: 30000,
     timeout: 27000
 };
+
 
 //Check for geolocation in browser
 if ('geolocation' in navigator) {
@@ -108,26 +62,26 @@ if ('geolocation' in navigator) {
 
 
 // if no geolocation available (need to redirect to different page) or if declined permission -- beyond basic functionality so may not need
-//function noGeoSearchMap() {
-    //console.log('ping');
+function noGeoSearchMap() {
+    console.log('ping');
     //need input to city city data.
     // noGeoCitySearch = input.value -- pass to fetch request
-    //fetchURL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/boston.json?&access_token=' + playDateMapBoxToken;
-    //fetch(fetchURL, {
-        //method: 'GET', //GET is the default.
-        //credentials: 'same-origin', // include, *same-origin, omit
-        //redirect: 'follow', // manual, *follow, error
-    //})
-        //.then(function (response) {
-            //return response.json();
+    fetchURL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/boston.json?&access_token=' + playDateMapBoxToken;
+    fetch(fetchURL, {
+        method: 'GET', //GET is the default.
+        credentials: 'same-origin', // include, *same-origin, omit
+        redirect: 'follow', // manual, *follow, error
+    })
+        .then(function (response) {
+            return response.json();
         })
-        //.then(function (data) {
-            //console.log(data);
-            //long = data.features[0].geometry.coordinates[0];
-            //lat = data.features[0].geometry.coordinates[1];
-            //buildMaps();
-        //});
-//};
+        .then(function (data) {
+            console.log(data);
+            long = data.features[0].geometry.coordinates[0];
+            lat = data.features[0].geometry.coordinates[1];
+            buildMaps();
+        });
+};
 
 
 //populate searches based on weather codes
@@ -367,19 +321,10 @@ function buildMaps() {
 //         .addTo(map); // Add the marker to the map
 // }
 
+
 // regularly updates position -- Use if want to update position
 //   const watchID = navigator.geolocation.watchPosition(success, error, options);
 
 
 
 //   navigator.geolocation.clearWatch(watchID); --- stop watching position
-  };
-  
-  //grabs position once 
-navigator.geolocation.getCurrentPosition((position) => {
-    success(position.coords.latitude, position.coords.longitude);
-    console.log(lat);
-    console.log(long);
-    var coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
-    console.log(coordinateUrl);
-  }, error,options);
