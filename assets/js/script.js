@@ -15,13 +15,13 @@ var iconCode = 800;
 var activityFetchUrls = [];
 var fullActivityList = [];
 // variable for weather icons, to be used for further search terms
-var weatherAreaEl= $("#weather-area");
+//var weatherAreaEl= $("#weather-area");
 //weatherbit.io API retrieval
 var weatherAPIKey = "54d824ecca864b9dbe80b3b774711d3a";
 var queryUrl = "https://api.weatherbit.io/v2.0/current?lat=";
 //retrieving weather at current location
 var weatherIconList = "https://www.weatherbit.io/static/img/icons/";
-
+var coordinateUrl;
 //create variables for possible marker interactivity
 // for (var i = 0; i < 5; ++i) {
 //     this["marker"+i] = "some stuff";
@@ -32,10 +32,6 @@ mapMarkers = ['marker0', 'marker1', 'marker2', 'marker3', 'marker4']
 //functions for geolocation, have to be initialized before called in geolocation
 function success(lat, long) {
     logLatLong(lat, long);
-    minLong = long - .5;
-    maxLong = long + .5;
-    minLat = lat - .5;
-    maxLat = lat + .5;
     // testFetch();
     // buildMaps();
 }
@@ -46,18 +42,18 @@ function error() {
 }
 
 //function to retrieve weather data
-function geolocationWeather(coordinateUrl){
-  var coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
+function geolocationWeather(){
+  coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
   fetch(coordinateUrl).then(function (response) {
     if (response.ok){
-      response.json().then(function weatherDataHere() {
-        //create section for weather display
-        var weatherHereEl = $(`<div>`).attr({id:"weather-display"});
+      return response.json().then(function getWeatherData(data) {
+        //add to display weather section
+        var weatherAreaEl = $("#nav-mobile");
         //obtain weather icons from API
-        var weatherIcon = weatherDataHere.data.weather.icon;
+        var weatherIcon = data.data[0].weather.icon;
         var weatherIconUrl = weatherIconList + weatherIcon + '.png';
         //update iconCode
-        iconCode += weatherDataHere.data.weather.code;
+        iconCode = data.data[0].weather.code;
         //create image element for weather icon
         var weatherIconImg = $(`<img>`).attr({
           id: 'weather-icon',
@@ -67,20 +63,20 @@ function geolocationWeather(coordinateUrl){
         //create unordered list of weather details
         var weatherListEl = $(`<ul>`);
         var weatherDetails = [
-          "Temperature: " + data.temp + " °F",
-          "Wind: " + data.wind_spd + " Miles per Hour",
-          "Humidity: " + data.rh + "%",
-          "UV Index: " + data.uv
+          "Temperature: " + data.data[0].temp + " °F",
+          "Wind: " + data.data[0].wind_spd + " Miles per Hour",
+          "Humidity: " + data.data[0].rh + "%",
+          "UV Index: " + data.data[0].uv
         ]
         //add in the API-listed weather details
         for (var x = 0; x < weatherDetails.length; x++){
           var weatherItems = $(`<li>`).text(weatherDetails[x])
           weatherListEl.append(weatherItems);
         }
-        $('#weather-area').before(weatherHereEl);
-        weatherHereEl.append(weatherIconImg);
-        weatherHereEl.append(weatherListEl);
+        var weatherHereEl = $('#weather-area')
+        weatherAreaEl.append(weatherIconImg);
         weatherAreaEl.append(weatherHereEl);
+        weatherHereEl.append(weatherListEl);
       })
     }
   })
@@ -262,6 +258,12 @@ function selectFiveActivities() {
 function logLatLong(latitude, longitude) {
     lat = latitude;
     long = longitude;
+    minLong = long - .5;
+    maxLong = long + .5;
+    minLat = lat - .5;
+    maxLat = lat + .5;
+    coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
+    geolocationWeather();
     buildMaps();
 }
 
@@ -280,10 +282,6 @@ function buildMaps() {
     const marker = new mapboxgl.Marker() // initialize a new marker for current location
         .setLngLat([long, lat]) // Marker [lng, lat] coordinates
         .addTo(map); // Add the marker to the map
-    minLong = long - .5;
-    maxLong = long + .5;
-    minLat = lat - .5;
-    maxLat = lat + .5;
     const geocoder = new MapboxGeocoder({
         // Initialize the geocoder -- allows active search on map
         accessToken: playDateMapBoxToken, // Set the access token
@@ -296,13 +294,6 @@ function buildMaps() {
             latitude: lat
         } //local coordinates
     });
-
-
-
-
-
-
-
 
     //comment out past here once search terms are set
     // Add the geocoder to the map - allows search terms on map
@@ -370,16 +361,14 @@ function buildMaps() {
 // regularly updates position -- Use if want to update position
 //   const watchID = navigator.geolocation.watchPosition(success, error, options);
 
-
-
 //   navigator.geolocation.clearWatch(watchID); --- stop watching position
   //};
   
   //grabs position once 
-navigator.geolocation.getCurrentPosition((position) => {
-    success(position.coords.latitude, position.coords.longitude);
-    console.log(lat);
-    console.log(long);
-    var coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
-    console.log(coordinateUrl);
-  }, error,options);
+// navigator.geolocation.getCurrentPosition((position) => {
+//     success(position.coords.latitude, position.coords.longitude);
+//     console.log(lat);
+//     console.log(long);
+//     var coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
+//     console.log(coordinateUrl);
+//   }, error,options);
