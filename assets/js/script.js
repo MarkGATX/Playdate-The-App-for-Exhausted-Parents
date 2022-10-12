@@ -23,6 +23,7 @@ var queryUrl = "https://api.weatherbit.io/v2.0/current?lat=";
 var weatherIconList = "https://www.weatherbit.io/static/img/icons/";
 var coordinateUrl
 var activityListParent = document.querySelector('.activities');
+var activeEventInfoEl = document.querySelector('#info')
 
 //create variables for possible marker interactivity
 mapMarkers = ['marker0', 'marker1', 'marker2', 'marker3', 'marker4']
@@ -238,8 +239,6 @@ function selectFiveActivities() {
             console.log(fullActivityList[i].features.length)
             let featureAddress = ""
             let j = Math.floor(Math.random() * (fullActivityList[i].features.length));
-            // send info to page
-            // NEED DOM TO SEND TO PAGE
             //create map marker
             var locationLong = fullActivityList[i].features[j].center[0];
             var locationLat = fullActivityList[i].features[j].center[1]
@@ -252,7 +251,14 @@ function selectFiveActivities() {
             } else {
                 featureAddress = fullActivityList[i].features[j].properties.address;
             }
-            activityListEl.innerHTML = `<h3>${fullActivityList[i].features[j].text}</h3><p>${featureAddress}</p><p>${fullActivityList[i].features[j].properties.category}`;
+            if (fullActivityList[i].features[j].properties.category === undefined) {
+                featureTags = ""
+            } else {
+                featureTags = fullActivityList[i].features[j].properties.category;
+            }
+            // send info to page
+            activityListEl.setAttribute('class', 'activityListItem')
+            activityListEl.innerHTML = `<h3 class="activityName">${fullActivityList[i].features[j].text}</h3><p class="activityAddress">${featureAddress}</p><p class="activityProperties">${featureTags}`;
 
             console.log(activityListEl)
             activityListParent.appendChild(activityListEl);
@@ -273,7 +279,39 @@ function selectFiveActivities() {
             console.log(fullActivityList[i].features)
         }
         localStorage.setItem('localStorageActivityList', JSON.stringify(fullActivityList));
+        activityListParent.addEventListener('click', populateActiveEvent);
+
     }
+}
+
+function populateActiveEvent(event) {
+    event.preventDefault();
+    var clickedEvent = event.target.closest('li');
+    console.log(clickedEvent)
+    //get card title with name of activity
+    var cardTitleName = document.querySelector('.card-title');
+    cardTitleName.textContent = "";
+    cardTitleName.textContent = `${clickedEvent.querySelector('.activityName').textContent}`;
+    //build <p> with address and add to card
+    var cardContentAddress = document.createElement('p');
+    cardContentAddress.textContent = `${clickedEvent.querySelector('.activityAddress').textContent}`;
+    //build anchor for card action
+    // var cardContentAction = document.querySelector('.card-action');
+    // cardContentAction.innerHTML = `<a href='`
+
+    // var clickedEventTags = document.createElement('p');
+    // clickedEventTags.textContent = `${clickedEvent.querySelector('.activityProperties').textContent}`;
+    // console.log(clickedEventTags)
+    // console.log(clickedEventAddress)
+    // var clickedEventReview = document.createElement('input');
+    // clickedEventReview.setAttribute('type', 'text');
+    // activeEventInfoEl.innerHTML = "";
+    // activeEventInfoEl.append(clickedEventName);
+    // activeEventInfoEl.append(clickedEventAddress);
+    // activeEventInfoEl.append(clickedEventTags);
+    // activeEventInfoEl.append(clickedEventReview);
+
+
 }
 
 
