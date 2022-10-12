@@ -16,8 +16,11 @@
             <nav class="light-blue lighten 2">
                 <div class="container">
                     <a href="#" class="brand-logo center">Playdate App</a>
-                    <ul id="nav-mobile" class="right hide-on-med-and-down">
-                        <li><a href="">Weather</a></li>
+                    <ul id="nav-mobile" class="collapsible popout right hide-on-med-and-down" data-collapsible="accordion">
+                        <li class="nav-weather">
+                            <div class="collapsible-header light-blue"><i class="material-icons">filter_drama</i>Weather</div>
+                            <div class="collapsible-body"><span>Lorem ipsum </span></div> 
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -25,7 +28,7 @@
         <!-- grid containing aside -->
         <div class="row">
 
-            <div class="col s3 red" id="aside">
+            <div class="col s3 white" id="aside">
                 <input class="white" placeholder="search"></input>
                 <ul class="activities">
                     <li>Movie Theater</li>
