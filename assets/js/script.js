@@ -10,10 +10,12 @@ var playDateMapBoxToken = 'pk.eyJ1IjoibWFya2dhdHgiLCJhIjoiY2w5MndoNDVqMDEwZDN5bX
 var goodWeatherCodes = [800, 801, 802, 803, 804, 741]
 //replace spaces with %20 when in production
 var goodWeatherSearches = ['playground%20', 'hike%20', 'lake%20', 'zoo%20', 'ice%20cream%20', 'track', 'state%20park%20', 'play']
-var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'theater%20']
+var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'theater%20', 'aquarium']
 var iconCode = 800;
 var activityFetchUrls = [];
 var fullActivityList = [];
+var savedLocalReviews = [];
+var currentReviewTitle = "";
 // variable for weather icons, to be used for further search terms
 
 //weatherbit.io API retrieval
@@ -32,7 +34,6 @@ mapMarkers = ['marker0', 'marker1', 'marker2', 'marker3', 'marker4']
 
 //functions for geolocation, have to be initialized before called in geolocation
 function success(lat, long) {
-
     logLatLong(lat, long);
 }
 
@@ -43,7 +44,6 @@ function error() {
 
 //function to retrieve weather data
 function geolocationWeather() {
-    coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
     fetch(coordinateUrl).then(function (response) {
         if (response.ok) {
             return response.json().then(function getWeatherData(data) {
@@ -289,34 +289,43 @@ function populateActiveEvent(event) {
     event.preventDefault();
     var clickedEvent = event.target.closest('li');
     console.log(clickedEvent)
+    savedLocalReviews = JSON.parse(localStorage.getItem('savedLocalReviewsStorage'));
+    console.log(savedLocalReviews)
+    if (savedLocalReviews === null) {
+        savedLocalReviews = [];
+        localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews))
+    }
+    currentReviewTitle = clickedEvent.querySelector('.activityName').textContent;
+    console.log(currentReviewTitle);
+    for (i = 0; i < savedLocalReviews.length; i++) {
+        console.log(currentReviewTitle + ' + saved review ' +savedLocalReviews[i][0]);
+        if (currentReviewTitle === savedLocalReviews[i][0]) {
+            var isCurrentReviewPresent = true;
+            var pastReview = savedLocalReviews[i][1]
+           break
+        } else {
+            var isCurrentReviewPresent = false;
+        }
+    }
+    
+    console.log(isCurrentReviewPresent)
     //get card title with name of activity
     var cardTitleName = document.querySelector('#desInfo');
     cardTitleName.innerHTML = "";
-    cardTitleName.innerHTML = `<li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityName').textContent}</div></li>
-    <li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityAddress').textContent}</div></li>
-    <li><div class="collapsible-header "><i class="material-icons">place</i>Your review!</div></li>
-    <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to update or submit your review...</div>
-        <div class="collapsible-body "><i class="material-icons">place</i><input type="text" placeholder='Type your review here...'/><button class='reviewSubmit'>Save your review</button></div></li>`;
-    //build <p> with address and add to card
-    // var cardContentAddress = document.createElement('p');
-    // cardContentAddress.textContent = `${clickedEvent.querySelector('.activityAddress').textContent}`;
-    //build anchor for card action
-    // var cardContentAction = document.querySelector('.card-action');
-    // cardContentAction.innerHTML = `<a href='`
-
-    // var clickedEventTags = document.createElement('p');
-    // clickedEventTags.textContent = `${clickedEvent.querySelector('.activityProperties').textContent}`;
-    // console.log(clickedEventTags)
-    // console.log(clickedEventAddress)
-    // var clickedEventReview = document.createElement('input');
-    // clickedEventReview.setAttribute('type', 'text');
-    // activeEventInfoEl.innerHTML = "";
-    // activeEventInfoEl.append(clickedEventName);
-    // activeEventInfoEl.append(clickedEventAddress);
-    // activeEventInfoEl.append(clickedEventTags);
-    // activeEventInfoEl.append(clickedEventReview);
-
-
+    if (isCurrentReviewPresent === false) {
+        cardTitleName.innerHTML = `<li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityName').textContent}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityAddress').textContent}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>Your review!</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to update or submit your review...</div>
+                <div class="collapsible-body input-field "><i class="material-icons">place</i><input type="text" placeholder='Type your review here...'/><button class='reviewSubmit'>Save your review</button></div></li>`;
+    } else {
+        cardTitleName.innerHTML = `<li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityName').textContent}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityAddress').textContent}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i><strong>Your review: </strong>${pastReview}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to update or submit your review...</div>
+                <div class="collapsible-body input-field"><i class="material-icons">place</i><input type="text" placeholder='Type your review here...'/><button class='reviewSubmit'>Save your review</button></div></li>`;
+    }
+    document.querySelector('.reviewSubmit').addEventListener('click', logReview);
 }
 
 
@@ -395,6 +404,26 @@ function buildMaps() {
     });
     getSearchTopicsFromWeather();
 }
+
+
+
+function logReview(event) {
+    savedLocalReviews = JSON.parse(localStorage.getItem('savedLocalReviewsStorage'));
+    if (savedLocalReviews === null) {
+        savedLocalReviews = [];
+        localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews))
+    }
+    var currentReview = (event.target.previousElementSibling.value);
+    var isCurrentReviewPresent = savedLocalReviews.indexOf(currentReviewTitle);
+    if (isCurrentReviewPresent === -1) {
+        savedLocalReviews.push([currentReviewTitle, currentReview]);
+    } else {
+        savedLocalReviews[isCurrentReviewPresent] = [currentReviewTitle, currentReview];
+    }
+    localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews));
+    return
+}
+
 
 
 // testing fetch endpoints. delete when not needed
