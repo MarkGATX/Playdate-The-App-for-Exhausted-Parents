@@ -88,47 +88,6 @@ const options = {
     timeout: 27000
 };
 
-//function to retrieve weather data
-function geolocationWeather(coordinateUrl) {
-    fetch(coordinateUrl).then(function (response) {
-        if (response.ok) {
-            response.json().then(function weatherDataHere() {
-                //create section for weather display
-                var weatherHereEl = $(`<div>`).attr({ id: "weather-display" });
-                //obtain weather icons from API
-                var weatherIcon = weatherDataHere.data.weather.icon;
-                var weatherIconUrl = weatherIconList + weatherIcon + '.png';
-                //update iconCode
-                iconCode += weatherDataHere.data.weather.code;
-                //create image element for weather icon
-                var weatherIconImg = $(`<img>`).attr({
-                    id: 'weather-icon',
-                    src: weatherIconUrl,
-                    alt: 'Image of simple weather icon',
-                })
-                //create unordered list of weather details
-                var weatherListEl = $(`<ul>`);
-                var weatherDetails = [
-                    "Temperature: " + data.temp + " °F",
-                    "Wind: " + data.wind_spd + " Miles per Hour",
-                    "Humidity: " + data.rh + "%",
-                    "UV Index: " + data.uv
-                ]
-                //add in the API-listed weather details
-                for (var x = 0; x < weatherDetails.length; x++) {
-                    var weatherItems = $(`<li>`).text(weatherDetails[x])
-                    weatherListEl.append(weatherItems);
-                }
-                $('#weather-area').before(weatherHereEl);
-                weatherHereEl.append(weatherIconImg);
-                weatherHereEl.append(weatherListEl);
-                weatherAreaEl.append(weatherHereEl);
-            })
-        }
-    })
-}
-
-
 
 //Check for geolocation in browser
 if ('geolocation' in navigator) {
@@ -300,7 +259,7 @@ function selectFiveActivities() {
             }
             // send info to page
             activityListEl.setAttribute('class', 'activityListItem')
-            activityListEl.innerHTML = `<h3 class="activityName">${fullActivityList[i].features[j].text}</h3><p class="activityAddress">${featureAddress}</p><p class="activityProperties">${featureTags}`;
+            activityListEl.innerHTML = `<h5 class="activityName">${fullActivityList[i].features[j].text}</h5><p class="activityAddress">${featureAddress}</p><p class="activityProperties">${featureTags}`;
 
             console.log(activityListEl)
             activityListParent.appendChild(activityListEl);
