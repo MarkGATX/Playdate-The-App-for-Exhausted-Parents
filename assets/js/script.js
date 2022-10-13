@@ -16,6 +16,7 @@ var activityFetchUrls = [];
 var fullActivityList = [];
 var savedLocalReviews = [];
 var currentReviewTitle = "";
+var isCurrentReviewPresent;
 // variable for weather icons, to be used for further search terms
 
 //weatherbit.io API retrieval
@@ -132,28 +133,23 @@ async function getSearchTopicsFromWeather() {
     if (goodWeatherCodes.includes(iconCode)) {
         //get unique random numbers
         let goodWeatherIndexArray = [];
-        for (let i = 0; i < goodWeatherCodes.length; i++) {
+        for (let i = 0; i < goodWeatherSearches.length; i++) {
             goodWeatherIndexArray.push(i);
-            console.log(goodWeatherIndexArray)
         }
         for (let i = goodWeatherIndexArray.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [goodWeatherIndexArray[i], goodWeatherIndexArray[j]] = [goodWeatherIndexArray[j], goodWeatherIndexArray[i]];
         }
-        console.log(goodWeatherIndexArray)
         //get results to pass to page for good weather.
         for (let i = 0; i < 5; i++) {
             activityIndex = goodWeatherIndexArray[i];
-            console.log(activityIndex)
             let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
-            console.log(fetchUrl)
             activityFetchUrls.push(fetchUrl);
-            console.log('5 topic array:  ' + activityFetchUrls)
         }
     } else {
         //get unique random numbers
         let badWeatherIndexArray = [];
-        for (let i = 0; i < badWeatherCodes.length; i++) {
+        for (let i = 0; i < badWeatherSearches.length; i++) {
             badWeatherIndexArray.push(i);
         }
         for (let i = badWeatherIndexArray.length - 1; i > 0; i--) {
@@ -166,33 +162,9 @@ async function getSearchTopicsFromWeather() {
             activityFetchUrls.push(fetchUrl);
         }
     }
-    console.log(activityFetchUrls);
     fetchAllTheThings();
 }
 
-
-//fetch results for each random topic, randomize full list, save full list to local storage so don't need another fetch request
-// async function fetchAllTheThings() {
-//     for (let i = 0; i < activityFetchUrls.length; i++) {
-//         console.log(activityFetchUrls[i])
-//         fetch(activityFetchUrls[i], {
-//             method: 'GET', //GET is the default.
-//             credentials: 'same-origin', // include, *same-origin, omit
-//             redirect: 'follow', // manual, *follow, error)
-//         })
-//             .then(function (response) {
-
-//                 return response.json();
-//             })
-//             .then(function (data) {
-//                 console.log(data)
-
-//                 fullActivityList.push(data);
-//                 console.log(fullActivityList)
-//             });
-//     } 
-//     return fullActivityList;
-// }
 
 function fetchAllTheThings() {
     var promises = [];
@@ -288,17 +260,16 @@ function selectFiveActivities() {
 function populateActiveEvent(event) {
     event.preventDefault();
     var clickedEvent = event.target.closest('li');
-    console.log(clickedEvent)
+    //pull local storage
     savedLocalReviews = JSON.parse(localStorage.getItem('savedLocalReviewsStorage'));
-    console.log(savedLocalReviews)
+    //initialize local storage array if doesn't exist
     if (savedLocalReviews === null) {
         savedLocalReviews = [];
         localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews))
     }
     currentReviewTitle = clickedEvent.querySelector('.activityName').textContent;
-    console.log(currentReviewTitle);
+    //check if current activity has an existing review
     for (i = 0; i < savedLocalReviews.length; i++) {
-        console.log(currentReviewTitle + ' + saved review ' +savedLocalReviews[i][0]);
         if (currentReviewTitle === savedLocalReviews[i][0]) {
             var isCurrentReviewPresent = true;
             var pastReview = savedLocalReviews[i][1]
@@ -307,11 +278,10 @@ function populateActiveEvent(event) {
             var isCurrentReviewPresent = false;
         }
     }
-    
-    console.log(isCurrentReviewPresent)
-    //get card title with name of activity
+      //get card title with name of activity
     var cardTitleName = document.querySelector('#desInfo');
     cardTitleName.innerHTML = "";
+    //populate page based on whether activity has a review already or not
     if (isCurrentReviewPresent === false) {
         cardTitleName.innerHTML = `<li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityName').textContent}</div></li>
             <li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityAddress').textContent}</div></li>
@@ -371,8 +341,7 @@ function buildMaps() {
         } //local coordinates
     });
 
-    //comment out past here once search terms are set
-    // Add the geocoder to the map - allows search terms on map
+    // Add the geocoder to the map 
     map.addControl(geocoder);
 
 
@@ -414,45 +383,22 @@ function logReview(event) {
         localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews))
     }
     var currentReview = (event.target.previousElementSibling.value);
-    var isCurrentReviewPresent = savedLocalReviews.indexOf(currentReviewTitle);
-    if (isCurrentReviewPresent === -1) {
-        savedLocalReviews.push([currentReviewTitle, currentReview]);
-    } else {
-        savedLocalReviews[isCurrentReviewPresent] = [currentReviewTitle, currentReview];
+    for (i = 0; i < savedLocalReviews.length; i++) {
+        if (currentReviewTitle === savedLocalReviews[i][0]) {
+            savedLocalReviews[i][1] = currentReview;
+            localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews));
+           return
+        } else {
+            var SavedReview = false;
+        }
     }
+    if (SavedReview === false) {
+        savedLocalReviews.push([currentReviewTitle, currentReview]);
+    }  
     localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews));
     return
 }
 
-
-
-// testing fetch endpoints. delete when not needed
-// function testFetch() {
-//     fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/donut.json?type=poi&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`, {
-//         method: 'GET', //GET is the default.
-//         credentials: 'same-origin', // include, *same-origin, omit
-//         redirect: 'follow', // manual, *follow, error
-//     })
-//         .then(function (response) {
-//             return response.json();
-//         })
-//         .then(function (data) {
-//             console.log(data);
-//             testMarker(data);
-//         });
-// }
-
-// //testing adding markers. delete when not needed anymore
-// function testMarker(data) {
-//     console.log(data)
-//     var locationLong = data.features[0].center[0];
-//     console.log(locationLong)
-//     var locationLat = data.features[0].center[1]
-//     console.log(locationLat);
-//     marker = new mapboxgl.Marker() // initialize a new marker
-//         .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
-//         .addTo(map); // Add the marker to the map
-// }
 
 // regularly updates position -- Use if want to update position
 //   const watchID = navigator.geolocation.watchPosition(success, error, options);
