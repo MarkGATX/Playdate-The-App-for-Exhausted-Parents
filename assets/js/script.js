@@ -11,7 +11,7 @@ var goodWeatherCodes = [800, 801, 802, 803, 804, 741]
 //replace spaces with %20 when in production
 var goodWeatherSearches = ['playground%20', 'hike%20', 'lake%20', 'zoo%20', 'ice%20cream%20', 'track', 'state%20park%20', 'play']
 var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'theater%20', 'aquarium']
-var iconCode = 800;
+var iconCode = 200;
 var activityFetchUrls = [];
 var fullActivityList = [];
 var savedLocalReviews = [];
@@ -130,6 +130,7 @@ if ('geolocation' in navigator) {
 //populate searches based on weather codes
 async function getSearchTopicsFromWeather() {
     activityFetchUrls = [];
+    console.log(iconCode)
     if (goodWeatherCodes.includes(iconCode)) {
         //get unique random numbers
         let goodWeatherIndexArray = [];
@@ -158,7 +159,7 @@ async function getSearchTopicsFromWeather() {
         }
         for (let i = 0; i < 5; i++) {
             activityIndex = badWeatherIndexArray[i];
-            let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
+            let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${badWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
             activityFetchUrls.push(fetchUrl);
         }
     }
