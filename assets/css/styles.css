@@ -52,7 +52,12 @@ body {
     height: 71vh;
 }
 
-#weather-area {
+#weather-header {
+    min-width: max-content;
+}
+
+#weather-list-item{
+    min-width: max-content;
 }
 
 #aside {
@@ -85,7 +90,7 @@ body {
 }
 
 .nav-weather {
-    width: 152px;
+    width: 200px;
 }
 
 .collapsible-header {
