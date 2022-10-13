@@ -10,10 +10,13 @@ var playDateMapBoxToken = 'pk.eyJ1IjoibWFya2dhdHgiLCJhIjoiY2w5MndoNDVqMDEwZDN5bX
 var goodWeatherCodes = [800, 801, 802, 803, 804, 741]
 //replace spaces with %20 when in production
 var goodWeatherSearches = ['playground%20', 'hike%20', 'lake%20', 'zoo%20', 'ice%20cream%20', 'track', 'state%20park%20', 'play']
-var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'theater%20']
-var iconCode = 800;
+var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'theater%20', 'aquarium']
+var iconCode = 200;
 var activityFetchUrls = [];
 var fullActivityList = [];
+var savedLocalReviews = [];
+var currentReviewTitle = "";
+var isCurrentReviewPresent;
 // variable for weather icons, to be used for further search terms
 
 //weatherbit.io API retrieval
@@ -32,7 +35,6 @@ mapMarkers = ['marker0', 'marker1', 'marker2', 'marker3', 'marker4']
 
 //functions for geolocation, have to be initialized before called in geolocation
 function success(lat, long) {
-
     logLatLong(lat, long);
 }
 
@@ -42,44 +44,43 @@ function error() {
 }
 
 //function to retrieve weather data
-function geolocationWeather(){
-  coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
-  fetch(coordinateUrl).then(function (response) {
-    if (response.ok){
-      return response.json().then(function getWeatherData(data) {
-        //add to display weather section
-        var weatherAreaEl = $("#nav-mobile");
-        //obtain weather icons from API
-        var weatherIcon = data.data[0].weather.icon;
-        var weatherIconUrl = weatherIconList + weatherIcon + '.png';
-        //update iconCode
-        iconCode = data.data[0].weather.code;
-        //create image element for weather icon
-        var weatherIconImg = $(`<img>`).attr({
-          id: 'weather-icon',
-          src: weatherIconUrl,
-          alt: 'Image of simple weather icon',
-        })
-        //create unordered list of weather details
-        var weatherListEl = $(`<ul>`);
-        var weatherDetails = [
-          "Temperature: " + data.data[0].temp + " °F",
-          "Wind: " + data.data[0].wind_spd + " Miles per Hour",
-          "Humidity: " + data.data[0].rh + "%",
-          "UV Index: " + data.data[0].uv
-        ]
-        //add in the API-listed weather details
-        for (var x = 0; x < weatherDetails.length; x++){
-          var weatherItems = $(`<li>`).text(weatherDetails[x])
-          weatherListEl.append(weatherItems);
+function geolocationWeather() {
+    fetch(coordinateUrl).then(function (response) {
+        if (response.ok) {
+            return response.json().then(function getWeatherData(data) {
+                //add to display weather section
+                var weatherAreaEl = $("#nav-mobile");
+                //obtain weather icons from API
+                var weatherIcon = data.data[0].weather.icon;
+                var weatherIconUrl = weatherIconList + weatherIcon + '.png';
+                //update iconCode
+                iconCode = data.data[0].weather.code;
+                //create image element for weather icon
+                var weatherIconImg = $(`<img>`).attr({
+                    id: 'weather-icon',
+                    src: weatherIconUrl,
+                    alt: 'Image of simple weather icon',
+                })
+                //create unordered list of weather details
+                var weatherListEl = $(`<ul>`);
+                var weatherDetails = [
+                    "Temperature: " + data.data[0].temp + " °F",
+                    "Wind: " + data.data[0].wind_spd + " Miles per Hour",
+                    "Humidity: " + data.data[0].rh + "%",
+                    "UV Index: " + data.data[0].uv
+                ]
+                //add in the API-listed weather details
+                for (var x = 0; x < weatherDetails.length; x++) {
+                    var weatherItems = $(`<li>`).text(weatherDetails[x])
+                    weatherListEl.append(weatherItems);
+                }
+                var weatherHereEl = $('#weather-area')
+                weatherAreaEl.append(weatherIconImg);
+                weatherAreaEl.append(weatherHereEl);
+                weatherHereEl.append(weatherListEl);
+            })
         }
-        var weatherHereEl = $('#weather-area')
-        weatherAreaEl.append(weatherIconImg);
-        weatherAreaEl.append(weatherHereEl);
-        weatherHereEl.append(weatherListEl);
-      })
-    }
-  })
+    })
 }
 
 const options = {
@@ -129,31 +130,27 @@ if ('geolocation' in navigator) {
 //populate searches based on weather codes
 async function getSearchTopicsFromWeather() {
     activityFetchUrls = [];
+    console.log(iconCode)
     if (goodWeatherCodes.includes(iconCode)) {
         //get unique random numbers
         let goodWeatherIndexArray = [];
-        for (let i = 0; i < goodWeatherCodes.length; i++) {
+        for (let i = 0; i < goodWeatherSearches.length; i++) {
             goodWeatherIndexArray.push(i);
-            console.log(goodWeatherIndexArray)
         }
         for (let i = goodWeatherIndexArray.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [goodWeatherIndexArray[i], goodWeatherIndexArray[j]] = [goodWeatherIndexArray[j], goodWeatherIndexArray[i]];
         }
-        console.log(goodWeatherIndexArray)
         //get results to pass to page for good weather.
         for (let i = 0; i < 5; i++) {
             activityIndex = goodWeatherIndexArray[i];
-            console.log(activityIndex)
             let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
-            console.log(fetchUrl)
             activityFetchUrls.push(fetchUrl);
-            console.log('5 topic array:  ' + activityFetchUrls)
         }
     } else {
         //get unique random numbers
         let badWeatherIndexArray = [];
-        for (let i = 0; i < badWeatherCodes.length; i++) {
+        for (let i = 0; i < badWeatherSearches.length; i++) {
             badWeatherIndexArray.push(i);
         }
         for (let i = badWeatherIndexArray.length - 1; i > 0; i--) {
@@ -162,43 +159,17 @@ async function getSearchTopicsFromWeather() {
         }
         for (let i = 0; i < 5; i++) {
             activityIndex = badWeatherIndexArray[i];
-            let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${goodWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
+            let fetchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${badWeatherSearches[activityIndex]}.json?bbox=${minLong},${minLat},${maxLong},${maxLat}&type=poi&limit=5&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`;
             activityFetchUrls.push(fetchUrl);
         }
     }
-    console.log(activityFetchUrls);
     fetchAllTheThings();
 }
 
 
-//fetch results for each random topic, randomize full list, save full list to local storage so don't need another fetch request
-// async function fetchAllTheThings() {
-//     for (let i = 0; i < activityFetchUrls.length; i++) {
-//         console.log(activityFetchUrls[i])
-//         fetch(activityFetchUrls[i], {
-//             method: 'GET', //GET is the default.
-//             credentials: 'same-origin', // include, *same-origin, omit
-//             redirect: 'follow', // manual, *follow, error)
-//         })
-//             .then(function (response) {
-
-//                 return response.json();
-//             })
-//             .then(function (data) {
-//                 console.log(data)
-
-//                 fullActivityList.push(data);
-//                 console.log(fullActivityList)
-//             });
-//     } 
-//     return fullActivityList;
-// }
-
 function fetchAllTheThings() {
     var promises = [];
-    console.log(activityFetchUrls)
     for (let i = 0; i < activityFetchUrls.length; i++) {
-        console.log(activityFetchUrls[i])
         promises.push(fetch(activityFetchUrls[i], {
             method: 'GET', //GET is the default.
             credentials: 'same-origin', // include, *same-origin, omit
@@ -214,12 +185,10 @@ function fetchAllTheThings() {
 
 //randomize fullActivityList
 function randomizeActivityList(allThings) {
-    console.log(allThings)
     for (let i = allThings.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [allThings[i], allThings[j]] = [allThings[j], allThings[i]];
     }
-    console.log(allThings)
     // save activity list to local storage
     localStorage.setItem("localStorageActivityList", JSON.stringify(allThings));
     selectFiveActivities();
@@ -237,15 +206,12 @@ function selectFiveActivities() {
         // grab 5 activities
         for (let i = 0; i < 5; i++) {
             //randomly pick activity from array 
-            console.log(fullActivityList[i].features.length)
             let featureAddress = ""
             let j = Math.floor(Math.random() * (fullActivityList[i].features.length));
             //create map marker
             var locationLong = fullActivityList[i].features[j].center[0];
             var locationLat = fullActivityList[i].features[j].center[1]
-            console.log(fullActivityList[i].features[j].place_name)
             var activityListEl = document.createElement('li');
-            console.log(activityListEl)
             //if address not defined in results, pass along empty string in variable, else pass along address. use variable in calls
             if (fullActivityList[i].features[j].properties.address === undefined) {
                 featureAddress = ""
@@ -260,10 +226,7 @@ function selectFiveActivities() {
             // send info to page
             activityListEl.setAttribute('class', 'activityListItem')
             activityListEl.innerHTML = `<h5 class="activityName">${fullActivityList[i].features[j].text}</h5><p class="activityAddress">${featureAddress}</p><p class="activityProperties">${featureTags}`;
-
-            console.log(activityListEl)
             activityListParent.appendChild(activityListEl);
-
             marker = new mapboxgl.Marker({ color: "green", rotation: 25 }) // initialize a new marker
                 .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
                 .setPopup(
@@ -275,9 +238,7 @@ function selectFiveActivities() {
                 )
                 .addTo(map); // Add the marker to the map
             //remove from the array
-            console.log(fullActivityList[i].features)
             fullActivityList[i].features.splice(j, 1);
-            console.log(fullActivityList[i].features)
         }
         localStorage.setItem('localStorageActivityList', JSON.stringify(fullActivityList));
         activityListParent.addEventListener('click', populateActiveEvent);
@@ -288,31 +249,44 @@ function selectFiveActivities() {
 function populateActiveEvent(event) {
     event.preventDefault();
     var clickedEvent = event.target.closest('li');
-    console.log(clickedEvent)
+    //pull local storage
+    savedLocalReviews = JSON.parse(localStorage.getItem('savedLocalReviewsStorage'));
+    //initialize local storage array if doesn't exist
+    if (savedLocalReviews === null) {
+        savedLocalReviews = [];
+        localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews))
+    }
+    var isCurrentReviewPresent = false;
+    currentReviewTitle = clickedEvent.querySelector('.activityName').textContent;
+    //check if current activity has an existing review  
+    if (savedLocalReviews === []) {
+        var isCurrentReviewPresent = false;
+    } else for (i = 0; i < savedLocalReviews.length; i++) {
+        if (currentReviewTitle === savedLocalReviews[i][0]) {
+            var isCurrentReviewPresent = true;
+            var pastReview = savedLocalReviews[i][1]
+            break
+        } 
+    }
+
     //get card title with name of activity
-    var cardTitleName = document.querySelector('.card-title');
-    cardTitleName.textContent = "";
-    cardTitleName.textContent = `${clickedEvent.querySelector('.activityName').textContent}`;
-    //build <p> with address and add to card
-    var cardContentAddress = document.createElement('p');
-    cardContentAddress.textContent = `${clickedEvent.querySelector('.activityAddress').textContent}`;
-    //build anchor for card action
-    // var cardContentAction = document.querySelector('.card-action');
-    // cardContentAction.innerHTML = `<a href='`
-
-    // var clickedEventTags = document.createElement('p');
-    // clickedEventTags.textContent = `${clickedEvent.querySelector('.activityProperties').textContent}`;
-    // console.log(clickedEventTags)
-    // console.log(clickedEventAddress)
-    // var clickedEventReview = document.createElement('input');
-    // clickedEventReview.setAttribute('type', 'text');
-    // activeEventInfoEl.innerHTML = "";
-    // activeEventInfoEl.append(clickedEventName);
-    // activeEventInfoEl.append(clickedEventAddress);
-    // activeEventInfoEl.append(clickedEventTags);
-    // activeEventInfoEl.append(clickedEventReview);
-
-
+    var cardTitleName = document.querySelector('#desInfo');
+    cardTitleName.innerHTML = "";
+    //populate page based on whether activity has a review already or not
+    if (isCurrentReviewPresent === false) {
+        cardTitleName.innerHTML = `<li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityName').textContent}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityAddress').textContent}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>You havent added a review yet!</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to submit your review...</div>
+                <div class="collapsible-body input-field "><i class="material-icons">place</i><input type="text" placeholder='Type your review here...'/><button class='reviewSubmit'>Save your review</button></div></li>`;
+    } else {
+        cardTitleName.innerHTML = `<li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityName').textContent}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityAddress').textContent}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i><strong>Your review: </strong>${pastReview}</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to update your review...</div>
+                <div class="collapsible-body input-field"><i class="material-icons">place</i><input type="text" placeholder='Type your review here...'/><button class='reviewSubmit'>Save your review</button></div></li>`;
+    }
+    document.querySelector('.reviewSubmit').addEventListener('click', logReview);
 }
 
 
@@ -358,8 +332,7 @@ function buildMaps() {
         } //local coordinates
     });
 
-    //comment out past here once search terms are set
-    // Add the geocoder to the map - allows search terms on map
+    // Add the geocoder to the map 
     map.addControl(geocoder);
 
 
@@ -393,33 +366,38 @@ function buildMaps() {
 }
 
 
-// testing fetch endpoints. delete when not needed
-// function testFetch() {
-//     fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/donut.json?type=poi&proximity=${long},${lat}&access_token=${playDateMapBoxToken}`, {
-//         method: 'GET', //GET is the default.
-//         credentials: 'same-origin', // include, *same-origin, omit
-//         redirect: 'follow', // manual, *follow, error
-//     })
-//         .then(function (response) {
-//             return response.json();
-//         })
-//         .then(function (data) {
-//             console.log(data);
-//             testMarker(data);
-//         });
-// }
 
-// //testing adding markers. delete when not needed anymore
-// function testMarker(data) {
-//     console.log(data)
-//     var locationLong = data.features[0].center[0];
-//     console.log(locationLong)
-//     var locationLat = data.features[0].center[1]
-//     console.log(locationLat);
-//     marker = new mapboxgl.Marker() // initialize a new marker
-//         .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
-//         .addTo(map); // Add the marker to the map
-// }
+function logReview(event) {
+    savedLocalReviews = JSON.parse(localStorage.getItem('savedLocalReviewsStorage'));
+    if (savedLocalReviews === null) {
+        savedLocalReviews = [];
+        localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews))
+    }
+    var currentReview = (event.target.previousElementSibling.value);
+
+    if (savedLocalReviews.length === 0) {
+        savedLocalReviews.push([currentReviewTitle, currentReview]);
+        localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews));
+
+        // return;
+    }
+    for (i = 0; i < savedLocalReviews.length; i++) {
+        if (currentReviewTitle === savedLocalReviews[i][0]) {
+            savedLocalReviews[i][1] = currentReview;
+            localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews));
+            return
+        } else {
+            var SavedReview = false;
+        }
+    }
+    if (SavedReview === false) {
+        savedLocalReviews.push([currentReviewTitle, currentReview]);
+ 
+    }
+    localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews));
+    return
+}
+
 
 // regularly updates position -- Use if want to update position
 //   const watchID = navigator.geolocation.watchPosition(success, error, options);
