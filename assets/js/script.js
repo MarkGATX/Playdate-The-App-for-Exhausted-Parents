@@ -11,7 +11,7 @@ var goodWeatherCodes = [800, 801, 802, 803, 804, 741]
 //replace spaces with %20 when in production
 var goodWeatherSearches = ['playground%20', 'hike%20', 'lake%20', 'zoo%20', 'ice%20cream%20', 'track', 'state%20park%20', 'play']
 var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'theater%20', 'aquarium']
-var iconCode = 200;
+var iconCode;
 var activityFetchUrls = [];
 var fullActivityList = [];
 var savedLocalReviews = [];
@@ -20,7 +20,8 @@ var isCurrentReviewPresent;
 // variable for weather icons, to be used for further search terms
 
 //weatherbit.io API retrieval
-var weatherAPIKey = "54d824ecca864b9dbe80b3b774711d3a";
+var weatherAPIKey = "cee3158b81624efdb69c85c5b782d480";
+
 var queryUrl = "https://api.weatherbit.io/v2.0/current?lat=";
 //retrieving weather at current location
 var weatherIconList = "https://www.weatherbit.io/static/img/icons/";
@@ -49,7 +50,7 @@ function geolocationWeather() {
         if (response.ok) {
             return response.json().then(function getWeatherData(data) {
                 //add to display weather section
-                var weatherAreaEl = $("#nav-mobile");
+                var weatherAreaEl = $("#weather-header");
                 //obtain weather icons from API
                 var weatherIcon = data.data[0].weather.icon;
                 var weatherIconUrl = weatherIconList + weatherIcon + '.png';
@@ -60,24 +61,28 @@ function geolocationWeather() {
                     id: 'weather-icon',
                     src: weatherIconUrl,
                     alt: 'Image of simple weather icon',
-                })
+                }).height(35).width(35);
+                weatherAreaEl.text("Current temp: ");
+                weatherAreaEl.append(weatherIconImg)
+                weatherAreaEl.append(data.data[0].temp + "\u00B0 F");
                 //create unordered list of weather details
                 var weatherListEl = $(`<ul>`);
                 var weatherDetails = [
-                    "Temperature: " + data.data[0].temp + " °F",
-                    "Wind: " + data.data[0].wind_spd + " Miles per Hour",
+                    "Conditions: " + data.data[0].weather.description,
+                    "Wind: " + data.data[0].wind_spd + " MPH",
                     "Humidity: " + data.data[0].rh + "%",
                     "UV Index: " + data.data[0].uv
                 ]
                 //add in the API-listed weather details
                 for (var x = 0; x < weatherDetails.length; x++) {
                     var weatherItems = $(`<li>`).text(weatherDetails[x])
+                    weatherItems.attr({id: "weather-list-item"});
                     weatherListEl.append(weatherItems);
                 }
-                var weatherHereEl = $('#weather-area')
-                weatherAreaEl.append(weatherIconImg);
-                weatherAreaEl.append(weatherHereEl);
-                weatherHereEl.append(weatherListEl);
+                var weatherIconEl = $("#nav-weather");
+                weatherIconEl.append(weatherIconImg);
+                var weatherInfoEl = $("#weather-info");
+                weatherInfoEl.append(weatherListEl);
             })
         }
     })
@@ -299,8 +304,8 @@ function logLatLong(latitude, longitude) {
     minLat = lat - .5;
     maxLat = lat + .5;
     geolocationWeather();
+    setTimeout(buildMaps, 5000);
 
-    buildMaps();
 }
 
 
