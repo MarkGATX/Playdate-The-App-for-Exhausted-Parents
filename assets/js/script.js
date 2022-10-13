@@ -169,9 +169,7 @@ async function getSearchTopicsFromWeather() {
 
 function fetchAllTheThings() {
     var promises = [];
-    console.log(activityFetchUrls)
     for (let i = 0; i < activityFetchUrls.length; i++) {
-        console.log(activityFetchUrls[i])
         promises.push(fetch(activityFetchUrls[i], {
             method: 'GET', //GET is the default.
             credentials: 'same-origin', // include, *same-origin, omit
@@ -187,12 +185,10 @@ function fetchAllTheThings() {
 
 //randomize fullActivityList
 function randomizeActivityList(allThings) {
-    console.log(allThings)
     for (let i = allThings.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [allThings[i], allThings[j]] = [allThings[j], allThings[i]];
     }
-    console.log(allThings)
     // save activity list to local storage
     localStorage.setItem("localStorageActivityList", JSON.stringify(allThings));
     selectFiveActivities();
@@ -210,15 +206,12 @@ function selectFiveActivities() {
         // grab 5 activities
         for (let i = 0; i < 5; i++) {
             //randomly pick activity from array 
-            console.log(fullActivityList[i].features.length)
             let featureAddress = ""
             let j = Math.floor(Math.random() * (fullActivityList[i].features.length));
             //create map marker
             var locationLong = fullActivityList[i].features[j].center[0];
             var locationLat = fullActivityList[i].features[j].center[1]
-            console.log(fullActivityList[i].features[j].place_name)
             var activityListEl = document.createElement('li');
-            console.log(activityListEl)
             //if address not defined in results, pass along empty string in variable, else pass along address. use variable in calls
             if (fullActivityList[i].features[j].properties.address === undefined) {
                 featureAddress = ""
@@ -233,10 +226,7 @@ function selectFiveActivities() {
             // send info to page
             activityListEl.setAttribute('class', 'activityListItem')
             activityListEl.innerHTML = `<h5 class="activityName">${fullActivityList[i].features[j].text}</h5><p class="activityAddress">${featureAddress}</p><p class="activityProperties">${featureTags}`;
-
-            console.log(activityListEl)
             activityListParent.appendChild(activityListEl);
-
             marker = new mapboxgl.Marker({ color: "green", rotation: 25 }) // initialize a new marker
                 .setLngLat([locationLong, locationLat]) // Marker [lng, lat] coordinates
                 .setPopup(
@@ -248,9 +238,7 @@ function selectFiveActivities() {
                 )
                 .addTo(map); // Add the marker to the map
             //remove from the array
-            console.log(fullActivityList[i].features)
             fullActivityList[i].features.splice(j, 1);
-            console.log(fullActivityList[i].features)
         }
         localStorage.setItem('localStorageActivityList', JSON.stringify(fullActivityList));
         activityListParent.addEventListener('click', populateActiveEvent);
@@ -268,18 +256,20 @@ function populateActiveEvent(event) {
         savedLocalReviews = [];
         localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews))
     }
+    var isCurrentReviewPresent = false;
     currentReviewTitle = clickedEvent.querySelector('.activityName').textContent;
-    //check if current activity has an existing review
-    for (i = 0; i < savedLocalReviews.length; i++) {
+    //check if current activity has an existing review  
+    if (savedLocalReviews === []) {
+        var isCurrentReviewPresent = false;
+    } else for (i = 0; i < savedLocalReviews.length; i++) {
         if (currentReviewTitle === savedLocalReviews[i][0]) {
             var isCurrentReviewPresent = true;
             var pastReview = savedLocalReviews[i][1]
-           break
-        } else {
-            var isCurrentReviewPresent = false;
-        }
+            break
+        } 
     }
-      //get card title with name of activity
+
+    //get card title with name of activity
     var cardTitleName = document.querySelector('#desInfo');
     cardTitleName.innerHTML = "";
     //populate page based on whether activity has a review already or not
@@ -384,18 +374,26 @@ function logReview(event) {
         localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews))
     }
     var currentReview = (event.target.previousElementSibling.value);
+
+    if (savedLocalReviews.length === 0) {
+        savedLocalReviews.push([currentReviewTitle, currentReview]);
+        localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews));
+
+        // return;
+    }
     for (i = 0; i < savedLocalReviews.length; i++) {
         if (currentReviewTitle === savedLocalReviews[i][0]) {
             savedLocalReviews[i][1] = currentReview;
             localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews));
-           return
+            return
         } else {
             var SavedReview = false;
         }
     }
     if (SavedReview === false) {
         savedLocalReviews.push([currentReviewTitle, currentReview]);
-    }  
+ 
+    }
     localStorage.setItem('savedLocalReviewsStorage', JSON.stringify(savedLocalReviews));
     return
 }
