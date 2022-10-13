@@ -3,14 +3,16 @@
 ## Description
 
 **Welcome, parents with children or anyone who may be bored!**
-This interactive webpage project is designed for use primarily by parents seeking recommendations or ideas for activities to do with their children. Alternatively, it can also function as a kid-friendly app for your average bored person to find and explore local activities. When given permission to retrieve current location in the browser window, search results are filtered by current weather conditions at the user's current position. The browser uses Materialize for the CSS framework and JQuery in Javascript, as well as saving search items to local storage. This interactive webpage app calls from public API's Weatherbit and Mapbox for data on local weather conditions and maps respectively. Building the app combined practiced knowledge of HTML, CSS, and JQuery applications, and served as a practical application of group collaboration with GitHub branching and merging.
+This interactive webpage project is designed for use primarily by parents seeking recommendations or ideas for activities to do with their children. Alternatively, it can also function as a kid-friendly app for your average bored person to find and explore local activities. 
+
+When given permission to retrieve current location in the browser window, search results are filtered by current weather conditions at the user's current position. The browser uses Materialize for the CSS framework and JQuery in Javascript, as well as saving search items to local storage. 
+
+This interactive webpage app calls from public API's Weatherbit and Mapbox for data on local weather conditions and maps respectively. Building the app combined practiced knowledge of HTML, CSS, and JQuery applications, and served as a practical application of group collaboration with GitHub branching and merging.
 
 ## Usage
 
-The screenshot below displays the home screen.
-
-
 Upon opening the webpage, the navigator popup will prompt the user to allow the browser to fetch their current location.
+
 ![Allow geolocation](./assets/images/allow-geolocation.png)
 
 Once the browser has retrieved the current location coordinates, the weather bar at the top will change to reflect the current weather conditions at the current location.
@@ -20,26 +22,28 @@ Clicking the start button in the middle will open the main screen.
 ![Start button](./assets/images/start-button.png)
 
 Upon entry, the user will have a map displayed in the center of the screen with weather still displayed at the top. Markers on the map will display suggestions for nearby activities based on the weather.
-(image)
+![screenshot of Playdate main app](./assets/images/Playdate%20Screenshot.jpg)
 
 Clicking on any of the suggestions will cause the central card to populate with information about the selected location.
-(image)
+![screenshot of PLaydate app with active event details](./assets/images/Playdate%20Screenshot%20with%20active%20event.jpg)
 
-The sidebar on the left displays more  suggested activities.
-(image)
+From the central card, you can click on the bottom section to reveal a text box. Here you can leave your own review and thoughts. Those will be available for you the next time you check the site from the computer you're currently using.
 
-Clicking the title, "Playdate App" at the top of the page should return the user to the home screen.
-(image)
 
 ## Credits
 
 Creators of this group project and associated GitHub profiles:
+
 Mark Gardner: https://github.com/MarkGATX
+
 Jimmy Huang: https://github.com/jimmehhuang
+
 Oscar Pererz-Hernandez: https://github.com/LilOTechGod
 
 API's referenced in this project:
+
 Weatherbit.io: https://www.weatherbit.io/api/weather-current
+
 Mapbox: https://docs.mapbox.com/api/maps/ 
 
 ## License
