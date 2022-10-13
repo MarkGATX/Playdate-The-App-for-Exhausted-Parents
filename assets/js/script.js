@@ -42,44 +42,44 @@ function error() {
 }
 
 //function to retrieve weather data
-function geolocationWeather(){
-  coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
-  fetch(coordinateUrl).then(function (response) {
-    if (response.ok){
-      return response.json().then(function getWeatherData(data) {
-        //add to display weather section
-        var weatherAreaEl = $("#nav-mobile");
-        //obtain weather icons from API
-        var weatherIcon = data.data[0].weather.icon;
-        var weatherIconUrl = weatherIconList + weatherIcon + '.png';
-        //update iconCode
-        iconCode = data.data[0].weather.code;
-        //create image element for weather icon
-        var weatherIconImg = $(`<img>`).attr({
-          id: 'weather-icon',
-          src: weatherIconUrl,
-          alt: 'Image of simple weather icon',
-        })
-        //create unordered list of weather details
-        var weatherListEl = $(`<ul>`);
-        var weatherDetails = [
-          "Temperature: " + data.data[0].temp + " °F",
-          "Wind: " + data.data[0].wind_spd + " Miles per Hour",
-          "Humidity: " + data.data[0].rh + "%",
-          "UV Index: " + data.data[0].uv
-        ]
-        //add in the API-listed weather details
-        for (var x = 0; x < weatherDetails.length; x++){
-          var weatherItems = $(`<li>`).text(weatherDetails[x])
-          weatherListEl.append(weatherItems);
+function geolocationWeather() {
+    coordinateUrl = queryUrl + lat + '&lon=' + long + '&key=' + weatherAPIKey + '&units=I';
+    fetch(coordinateUrl).then(function (response) {
+        if (response.ok) {
+            return response.json().then(function getWeatherData(data) {
+                //add to display weather section
+                var weatherAreaEl = $("#nav-mobile");
+                //obtain weather icons from API
+                var weatherIcon = data.data[0].weather.icon;
+                var weatherIconUrl = weatherIconList + weatherIcon + '.png';
+                //update iconCode
+                iconCode = data.data[0].weather.code;
+                //create image element for weather icon
+                var weatherIconImg = $(`<img>`).attr({
+                    id: 'weather-icon',
+                    src: weatherIconUrl,
+                    alt: 'Image of simple weather icon',
+                })
+                //create unordered list of weather details
+                var weatherListEl = $(`<ul>`);
+                var weatherDetails = [
+                    "Temperature: " + data.data[0].temp + " °F",
+                    "Wind: " + data.data[0].wind_spd + " Miles per Hour",
+                    "Humidity: " + data.data[0].rh + "%",
+                    "UV Index: " + data.data[0].uv
+                ]
+                //add in the API-listed weather details
+                for (var x = 0; x < weatherDetails.length; x++) {
+                    var weatherItems = $(`<li>`).text(weatherDetails[x])
+                    weatherListEl.append(weatherItems);
+                }
+                var weatherHereEl = $('#weather-area')
+                weatherAreaEl.append(weatherIconImg);
+                weatherAreaEl.append(weatherHereEl);
+                weatherHereEl.append(weatherListEl);
+            })
         }
-        var weatherHereEl = $('#weather-area')
-        weatherAreaEl.append(weatherIconImg);
-        weatherAreaEl.append(weatherHereEl);
-        weatherHereEl.append(weatherListEl);
-      })
-    }
-  })
+    })
 }
 
 const options = {
@@ -290,12 +290,16 @@ function populateActiveEvent(event) {
     var clickedEvent = event.target.closest('li');
     console.log(clickedEvent)
     //get card title with name of activity
-    var cardTitleName = document.querySelector('.card-title');
-    cardTitleName.textContent = "";
-    cardTitleName.textContent = `${clickedEvent.querySelector('.activityName').textContent}`;
+    var cardTitleName = document.querySelector('#desInfo');
+    cardTitleName.innerHTML = "";
+    cardTitleName.innerHTML = `<li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityName').textContent}</div></li>
+    <li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityAddress').textContent}</div></li>
+    <li><div class="collapsible-header "><i class="material-icons">place</i>Your review!</div></li>
+    <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to update or submit your review...</div>
+        <div class="collapsible-body "><i class="material-icons">place</i><input type="text" placeholder='Type your review here...'/><button class='reviewSubmit'>Save your review</button></div></li>`;
     //build <p> with address and add to card
-    var cardContentAddress = document.createElement('p');
-    cardContentAddress.textContent = `${clickedEvent.querySelector('.activityAddress').textContent}`;
+    // var cardContentAddress = document.createElement('p');
+    // cardContentAddress.textContent = `${clickedEvent.querySelector('.activityAddress').textContent}`;
     //build anchor for card action
     // var cardContentAction = document.querySelector('.card-action');
     // cardContentAction.innerHTML = `<a href='`
