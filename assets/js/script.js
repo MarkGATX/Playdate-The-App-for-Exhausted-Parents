@@ -60,11 +60,11 @@ function geolocationWeather() {
                     id: 'weather-icon',
                     src: weatherIconUrl,
                     alt: 'Image of simple weather icon',
-                })
+                }).height(35).width(35);
                 //create unordered list of weather details
                 var weatherListEl = $(`<ul>`);
                 var weatherDetails = [
-                    "Temperature: " + data.data[0].temp + " °F",
+                    "Temperature: " + data.data[0].temp + "\u00B0 F",
                     "Wind: " + data.data[0].wind_spd + " Miles per Hour",
                     "Humidity: " + data.data[0].rh + "%",
                     "UV Index: " + data.data[0].uv
