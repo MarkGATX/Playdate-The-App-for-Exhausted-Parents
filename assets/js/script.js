@@ -11,7 +11,7 @@ var goodWeatherCodes = [800, 801, 802, 803, 804, 741]
 //replace spaces with %20 when in production
 var goodWeatherSearches = ['playground%20', 'hike%20', 'lake%20', 'zoo%20', 'ice%20cream%20', 'track', 'state%20park%20', 'play']
 var badWeatherSearches = ['museum%20', 'movie%20', 'library%20', 'craft%20', 'theater%20', 'aquarium']
-var iconCode = 200;
+var iconCode;
 var activityFetchUrls = [];
 var fullActivityList = [];
 var savedLocalReviews = [];
@@ -20,7 +20,8 @@ var isCurrentReviewPresent;
 // variable for weather icons, to be used for further search terms
 
 //weatherbit.io API retrieval
-var weatherAPIKey = "54d824ecca864b9dbe80b3b774711d3a";
+var weatherAPIKey = "cee3158b81624efdb69c85c5b782d480";
+// "54d824ecca864b9dbe80b3b774711d3a";
 var queryUrl = "https://api.weatherbit.io/v2.0/current?lat=";
 //retrieving weather at current location
 var weatherIconList = "https://www.weatherbit.io/static/img/icons/";
@@ -299,8 +300,7 @@ function logLatLong(latitude, longitude) {
     minLat = lat - .5;
     maxLat = lat + .5;
     geolocationWeather();
-
-    buildMaps();
+    setTimeout(buildMaps, 5000);
 }
 
 
