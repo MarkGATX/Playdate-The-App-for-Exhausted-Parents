@@ -286,14 +286,14 @@ function populateActiveEvent(event) {
     if (isCurrentReviewPresent === false) {
         cardTitleName.innerHTML = `<li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityName').textContent}</div></li>
             <li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityAddress').textContent}</div></li>
-            <li><div class="collapsible-header "><i class="material-icons">place</i>Your review!</div></li>
-            <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to update or submit your review...</div>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>You havent added a review yet!</div></li>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to submit your review...</div>
                 <div class="collapsible-body input-field "><i class="material-icons">place</i><input type="text" placeholder='Type your review here...'/><button class='reviewSubmit'>Save your review</button></div></li>`;
     } else {
         cardTitleName.innerHTML = `<li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityName').textContent}</div></li>
             <li><div class="collapsible-header "><i class="material-icons">place</i>${clickedEvent.querySelector('.activityAddress').textContent}</div></li>
             <li><div class="collapsible-header "><i class="material-icons">place</i><strong>Your review: </strong>${pastReview}</div></li>
-            <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to update or submit your review...</div>
+            <li><div class="collapsible-header "><i class="material-icons">place</i>Click here to update your review...</div>
                 <div class="collapsible-body input-field"><i class="material-icons">place</i><input type="text" placeholder='Type your review here...'/><button class='reviewSubmit'>Save your review</button></div></li>`;
     }
     document.querySelector('.reviewSubmit').addEventListener('click', logReview);
