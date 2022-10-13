@@ -338,7 +338,7 @@ function buildMaps() {
     });
 
     // Add the geocoder to the map 
-    map.addControl(geocoder);
+    // map.addControl(geocoder);
 
 
     map.on('load', () => {
