@@ -1,4 +1,4 @@
-var startButton = document.getElementById('str-btn');
+var startButton = document.querySelector('.btn-large');
 console.log(startButton)
 var redirectUrl = './mainpage.html'
 startButton.addEventListener('click', redirectToMain)
