@@ -15,7 +15,7 @@ body {
 
 /* ids */
 #active {
-    background: wheat;
+    background-color: wheat;
 }
 
 #desInfo {
@@ -149,7 +149,7 @@ body {
 }
 
 .collapsible-body {
-    background: wheat;
+    background-color: wheat;
 }
 
 nav ul li.active {
