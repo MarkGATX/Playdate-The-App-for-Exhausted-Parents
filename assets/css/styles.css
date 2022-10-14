@@ -14,6 +14,9 @@ body {
 
 
 /* ids */
+#active {
+    background-color: wheat;
+}
 
 #desInfo {
     position: relative;
@@ -90,6 +93,12 @@ body {
     left: 36px;
 }
 
+#nav-mobile {
+    /* background-color: wheat;
+    color: black */
+}
+
+
 /* classes */
 
 .map {
@@ -102,6 +111,8 @@ body {
 
 .nav-weather {
     width: 200px;
+    /* background-color: wheat;
+    color: black */
 }
 
 .collapsible-header {
@@ -138,5 +149,11 @@ body {
 }
 
 .collapsible-body {
-    background: beige;
+    background-color: wheat;
+}
+
+nav ul li.active {
+    background-color: wheat;
+    color:black;
+
 }
